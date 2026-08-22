@@ -59,6 +59,7 @@ const ADMIN_MENU_GROUPS = [
   {
     title: "Intelligence & Security",
     items: [
+      { label: "ERP Dynamic Reports", href: "/admin/reports", icon: FileText, badge: "ERP" },
       { label: "Reports & Analytics", href: "/admin/analytics", icon: BarChart3 },
       { label: "Notifications", href: "/admin/notifications", icon: Bell },
       { label: "User Management", href: "/admin/users", icon: Users },

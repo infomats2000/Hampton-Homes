@@ -14,6 +14,7 @@ export interface AgentModel {
   bio: string;
   isFeatured: boolean;
   languages: string[];
+  activeListingsCount?: number;
 }
 
 export interface OfficeModel {
