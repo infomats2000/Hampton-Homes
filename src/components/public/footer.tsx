@@ -10,12 +10,11 @@ export function PublicFooter() {
           {/* Brand Info */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg gold-gradient flex items-center justify-center font-serif text-xl font-bold text-slate-900">
-                H
-              </div>
-              <span className="font-serif text-2xl font-bold tracking-tight text-white">
-                HAMPTON HOMES
-              </span>
+              <img
+                src="/logo.jpg"
+                alt="Hampton Homes Realtors"
+                className="h-12 w-auto object-contain rounded-md shadow-sm"
+              />
             </div>
             <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
               Australia&apos;s premier real estate agency platform. Powered by direct MRI Vault and Property Tree synchronization for seamless real-time listings.

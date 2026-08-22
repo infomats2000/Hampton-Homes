@@ -78,18 +78,15 @@ export function AdminSidebar() {
     <aside className="w-64 bg-[#071325] text-slate-300 flex flex-col h-screen sticky top-0 border-r border-slate-800 shrink-0">
       {/* Brand Header */}
       <div className="h-16 px-6 flex items-center border-b border-slate-800 justify-between">
-        <Link href="/admin/dashboard" className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-md gold-gradient flex items-center justify-center font-serif text-lg font-bold text-slate-900">
-            H
-          </div>
-          <div className="flex flex-col">
-            <span className="font-serif font-bold text-white tracking-tight leading-none text-base">
-              HAMPTON
-            </span>
-            <span className="text-[9px] uppercase tracking-widest text-[#c5a059] font-medium">
-              Admin Portal
-            </span>
-          </div>
+        <Link href="/admin/dashboard" className="flex items-center gap-3">
+          <img
+            src="/logo.jpg"
+            alt="Hampton Homes Realtors"
+            className="h-10 w-auto object-contain rounded-md shadow-sm"
+          />
+          <span className="text-[10px] uppercase tracking-widest text-[#c5a059] font-bold border border-[#c5a059]/30 px-2 py-0.5 rounded-full bg-[#c5a059]/10">
+            Admin
+          </span>
         </Link>
       </div>
 

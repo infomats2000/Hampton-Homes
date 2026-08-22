@@ -55,17 +55,11 @@ export function PublicNavbar() {
         <div className="flex h-20 items-center justify-between">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="h-10 w-10 rounded-lg bg-[#0a192f] gold-gradient flex items-center justify-center font-serif text-xl font-bold text-slate-900 shadow-md">
-              H
-            </div>
-            <div className="flex flex-col">
-              <span className="font-serif text-xl font-bold tracking-tight text-[#0a192f] group-hover:text-[#c5a059] transition-colors">
-                HAMPTON HOMES
-              </span>
-              <span className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold">
-                Real Estate Australia
-              </span>
-            </div>
+            <img
+              src="/logo.jpg"
+              alt="Hampton Homes Realtors"
+              className="h-12 w-auto object-contain rounded-md shadow-sm group-hover:scale-105 transition-transform"
+            />
           </Link>
 
           {/* Desktop Navigation */}
