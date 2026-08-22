@@ -23,7 +23,7 @@ import {
   History,
   Activity,
   UserCheck,
-  Sparkles,
+  X,
 } from "lucide-react";
 
 const ADMIN_MENU_GROUPS = [
@@ -71,14 +71,19 @@ const ADMIN_MENU_GROUPS = [
   },
 ];
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  mobileOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function AdminSidebar({ mobileOpen = false, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
 
-  return (
-    <aside className="w-64 bg-[#071325] text-slate-300 flex flex-col h-screen sticky top-0 border-r border-slate-800 shrink-0">
+  const sidebarContent = (
+    <div className="w-64 bg-[#071325] text-slate-300 flex flex-col h-full border-r border-slate-800 shrink-0">
       {/* Brand Header */}
       <div className="h-16 px-6 flex items-center border-b border-slate-800 justify-between">
-        <Link href="/admin/dashboard" className="flex items-center gap-3">
+        <Link href="/admin/dashboard" onClick={onClose} className="flex items-center gap-3">
           <img
             src="/logo.jpg"
             alt="Hampton Homes Realtors"
@@ -88,6 +93,14 @@ export function AdminSidebar() {
             Admin
           </span>
         </Link>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="lg:hidden p-1 text-slate-400 hover:text-white rounded-md"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       {/* Navigation Groups */}
@@ -104,6 +117,7 @@ export function AdminSidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={onClose}
                   className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                     isActive
                       ? "bg-[#1a365d] text-white font-semibold shadow-xs"
@@ -137,6 +151,30 @@ export function AdminSidebar() {
         </div>
         <p className="text-[10px] text-slate-500">Vault & Property Tree connected</p>
       </div>
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar (Fixed) */}
+      <aside className="hidden lg:flex h-screen sticky top-0 shrink-0">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Drawer (Slide-over) */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+            onClick={onClose}
+          />
+          {/* Slide Drawer */}
+          <div className="relative z-10 flex flex-1 w-full max-w-xs bg-[#071325] shadow-2xl">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
