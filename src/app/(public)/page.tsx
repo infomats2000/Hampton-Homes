@@ -29,7 +29,7 @@ export default function HomePage() {
           </div>
 
           <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight leading-tight text-white">
-            Find Your Dream Australian Home
+            Hampton Homes Realestate
           </h1>
           <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto font-light">
             Explore premium residential sales, luxury rentals, and iconic coastal estates curated by Hampton Homes.
