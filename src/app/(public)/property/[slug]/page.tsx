@@ -30,12 +30,18 @@ import { MOCK_AGENTS } from "@/lib/properties/service";
 
 export default function PropertyDetailPage() {
   const params = useParams();
-  const rawSlug = (params.slug as string) || "";
+  const rawSlug = Array.isArray(params?.slug) ? params.slug[0] : (params?.slug as string) || "";
+  const decodedSlug = decodeURIComponent(rawSlug).toLowerCase();
 
-  // Match by external ID or slug substring
+  // Smart property lookup by ID, suburb, or street name
   const property =
-    MOCK_AUSTRALIAN_PROPERTIES.find((p) => p.externalId === rawSlug) ||
-    MOCK_AUSTRALIAN_PROPERTIES[0];
+    MOCK_AUSTRALIAN_PROPERTIES.find(
+      (p) =>
+        p.externalId.toLowerCase() === decodedSlug ||
+        p.externalId.toLowerCase().includes(decodedSlug) ||
+        decodedSlug.includes(p.suburb.toLowerCase()) ||
+        p.streetName.toLowerCase().includes(decodedSlug)
+    ) || MOCK_AUSTRALIAN_PROPERTIES[0];
 
   const [selectedPhoto, setSelectedPhoto] = useState(property.photos[0] || "");
   const [isSaved, setIsSaved] = useState(false);
@@ -49,11 +55,11 @@ export default function PropertyDetailPage() {
   };
 
   return (
-    <div className="bg-slate-50 py-8 space-y-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+    <div className="bg-slate-50 py-6 sm:py-8 space-y-8 sm:space-y-12 overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
         {/* Top Breadcrumb & Actions Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-slate-500">
             <Link href="/" className="hover:text-[#0a192f]">Home</Link>
             <span>/</span>
             <Link href="/buy" className="hover:text-[#0a192f]">Properties</Link>
@@ -69,13 +75,18 @@ export default function PropertyDetailPage() {
               className={`gap-1.5 text-xs ${isSaved ? "text-rose-600 border-rose-300 bg-rose-50" : ""}`}
             >
               <Heart className={`h-4 w-4 ${isSaved ? "fill-rose-600" : ""}`} />
-              <span>{isSaved ? "Saved" : "Save Property"}</span>
+              <span>{isSaved ? "Saved" : "Save"}</span>
             </Button>
 
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigator.clipboard.writeText(window.location.href)}
+              onClick={() => {
+                if (navigator.clipboard) {
+                  navigator.clipboard.writeText(window.location.href);
+                  alert("Property link copied to clipboard!");
+                }
+              }}
               className="gap-1.5 text-xs"
             >
               <Share2 className="h-4 w-4" />
@@ -96,7 +107,7 @@ export default function PropertyDetailPage() {
 
         {/* Title Header */}
         <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Badge variant={property.listingType === "RESIDENTIAL_SALE" ? "sale" : "rent"}>
               {property.listingType === "RESIDENTIAL_SALE" ? "For Sale" : "For Rent"}
             </Badge>
@@ -107,12 +118,12 @@ export default function PropertyDetailPage() {
             <span className="text-xs font-mono text-slate-400">MRI ID: {property.externalId}</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#0a192f] leading-tight">
+          <h1 className="font-serif text-2xl sm:text-4xl font-bold text-[#0a192f] leading-tight">
             {property.headline}
           </h1>
 
-          <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
-            <MapPin className="h-4 w-4 text-[#c5a059]" />
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-600 font-medium">
+            <MapPin className="h-4 w-4 text-[#c5a059] shrink-0" />
             <span>
               {property.streetNumber} {property.streetName}, {property.suburb} {property.state} {property.postcode}
             </span>
@@ -120,26 +131,26 @@ export default function PropertyDetailPage() {
         </div>
 
         {/* Media Gallery Section */}
-        <div className="space-y-4">
-          <div className="relative aspect-16/9 md:aspect-21/9 rounded-2xl overflow-hidden bg-slate-900 shadow-xl">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="relative aspect-16/10 sm:aspect-16/9 md:aspect-21/9 rounded-xl sm:rounded-2xl overflow-hidden bg-slate-900 shadow-xl">
             <img
               src={selectedPhoto}
               alt={property.headline}
               className="w-full h-full object-cover transition-all duration-300"
             />
-            <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-semibold flex items-center gap-1.5">
+            <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-semibold flex items-center gap-1.5">
               <Maximize2 className="h-3.5 w-3.5" />
-              <span>Photo Gallery ({property.photos.length})</span>
+              <span>Photos ({property.photos.length})</span>
             </div>
           </div>
 
           {/* Thumbnail Selector */}
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+          <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-thin">
             {property.photos.map((photo, idx) => (
               <button
                 key={idx}
                 onClick={() => setSelectedPhoto(photo)}
-                className={`relative h-20 w-28 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
+                className={`relative h-16 w-24 sm:h-20 sm:w-28 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
                   selectedPhoto === photo ? "border-[#c5a059] ring-2 ring-[#c5a059]/40" : "border-transparent opacity-70 hover:opacity-100"
                 }`}
               >
@@ -150,46 +161,46 @@ export default function PropertyDetailPage() {
         </div>
 
         {/* Specs Ribbon & Price Display */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Price Guide</span>
-            <p className="font-serif text-3xl sm:text-4xl font-bold text-[#0a192f] mt-0.5">
+            <span className="text-[11px] font-semibold uppercase text-slate-400 tracking-wider">Price Guide</span>
+            <p className="font-serif text-2xl sm:text-4xl font-bold text-[#0a192f] mt-0.5">
               {property.priceDisplay}
             </p>
           </div>
 
           {/* Specs */}
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-6 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-8 text-slate-700">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 sm:gap-6 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-8 text-slate-700">
             <div>
-              <span className="text-xs text-slate-400 block font-medium">Bedrooms</span>
-              <div className="flex items-center gap-1.5 font-bold text-lg text-[#0a192f] mt-0.5">
-                <Bed className="h-5 w-5 text-[#c5a059]" />
+              <span className="text-[11px] text-slate-400 block font-medium">Bedrooms</span>
+              <div className="flex items-center gap-1.5 font-bold text-base sm:text-lg text-[#0a192f] mt-0.5">
+                <Bed className="h-4 w-4 sm:h-5 sm:w-5 text-[#c5a059]" />
                 <span>{property.bedrooms}</span>
               </div>
             </div>
             <div>
-              <span className="text-xs text-slate-400 block font-medium">Bathrooms</span>
-              <div className="flex items-center gap-1.5 font-bold text-lg text-[#0a192f] mt-0.5">
-                <Bath className="h-5 w-5 text-[#c5a059]" />
+              <span className="text-[11px] text-slate-400 block font-medium">Bathrooms</span>
+              <div className="flex items-center gap-1.5 font-bold text-base sm:text-lg text-[#0a192f] mt-0.5">
+                <Bath className="h-4 w-4 sm:h-5 sm:w-5 text-[#c5a059]" />
                 <span>{property.bathrooms}</span>
               </div>
             </div>
             <div>
-              <span className="text-xs text-slate-400 block font-medium">Car Spaces</span>
-              <div className="flex items-center gap-1.5 font-bold text-lg text-[#0a192f] mt-0.5">
-                <Car className="h-5 w-5 text-[#c5a059]" />
+              <span className="text-[11px] text-slate-400 block font-medium">Car Spaces</span>
+              <div className="flex items-center gap-1.5 font-bold text-base sm:text-lg text-[#0a192f] mt-0.5">
+                <Car className="h-4 w-4 sm:h-5 sm:w-5 text-[#c5a059]" />
                 <span>{property.carSpaces}</span>
               </div>
             </div>
             {property.landAreaSqm && (
               <div>
-                <span className="text-xs text-slate-400 block font-medium">Land Size</span>
-                <p className="font-bold text-lg text-[#0a192f] mt-0.5">{property.landAreaSqm} m²</p>
+                <span className="text-[11px] text-slate-400 block font-medium">Land Size</span>
+                <p className="font-bold text-base sm:text-lg text-[#0a192f] mt-0.5">{property.landAreaSqm} m²</p>
               </div>
             )}
             <div>
-              <span className="text-xs text-slate-400 block font-medium">Type</span>
-              <p className="font-bold text-lg text-[#0a192f] mt-0.5">{property.propertyType}</p>
+              <span className="text-[11px] text-slate-400 block font-medium">Type</span>
+              <p className="font-bold text-base sm:text-lg text-[#0a192f] mt-0.5">{property.propertyType}</p>
             </div>
           </div>
         </div>
@@ -197,12 +208,12 @@ export default function PropertyDetailPage() {
         {/* Main Content Grid: Description & Features vs Agent Contact Form */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             {/* Description Card */}
             <Card>
-              <CardContent className="p-8 space-y-4">
-                <h2 className="font-serif text-2xl font-bold text-[#0a192f]">About This Property</h2>
-                <p className="text-slate-700 leading-relaxed whitespace-pre-line text-base font-normal">
+              <CardContent className="p-5 sm:p-8 space-y-4">
+                <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#0a192f]">About This Property</h2>
+                <p className="text-slate-700 leading-relaxed whitespace-pre-line text-sm sm:text-base font-normal">
                   {property.description}
                 </p>
               </CardContent>
@@ -210,9 +221,9 @@ export default function PropertyDetailPage() {
 
             {/* Key Features & Amenities */}
             <Card>
-              <CardContent className="p-8 space-y-4">
-                <h2 className="font-serif text-2xl font-bold text-[#0a192f]">Property Features</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+              <CardContent className="p-5 sm:p-8 space-y-4">
+                <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#0a192f]">Property Features</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3 pt-2">
                   {[
                     "Gourmet Marble Kitchen",
                     "Miele Built-in Appliances",
@@ -236,10 +247,10 @@ export default function PropertyDetailPage() {
             {/* Inspection Times */}
             {property.inspections && property.inspections.length > 0 && (
               <Card>
-                <CardContent className="p-8 space-y-4">
+                <CardContent className="p-5 sm:p-8 space-y-4">
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-6 w-6 text-[#c5a059]" />
-                    <h2 className="font-serif text-2xl font-bold text-[#0a192f]">Upcoming Inspection Sessions</h2>
+                    <Calendar className="h-5 w-5 text-[#c5a059]" />
+                    <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#0a192f]">Upcoming Inspection Sessions</h2>
                   </div>
                   <div className="space-y-3 pt-2">
                     {property.inspections.map((insp, idx) => (
@@ -264,17 +275,17 @@ export default function PropertyDetailPage() {
           {/* Right Sticky Agent Sidebar */}
           <div className="space-y-6">
             {/* Agent Profile & Direct Enquiry Form */}
-            <Card className="sticky top-24 shadow-md">
-              <CardContent className="p-6 space-y-6">
+            <Card className="lg:sticky lg:top-24 shadow-md">
+              <CardContent className="p-5 sm:p-6 space-y-6">
                 {/* Agent Card */}
                 <div className="flex items-center gap-4 pb-4 border-b border-slate-100">
                   <img
                     src={agent.photoUrl}
                     alt={agent.name}
-                    className="h-16 w-16 rounded-full object-cover border-2 border-[#c5a059]"
+                    className="h-14 w-14 sm:h-16 sm:w-16 rounded-full object-cover border-2 border-[#c5a059] shrink-0"
                   />
                   <div>
-                    <h3 className="font-serif font-bold text-lg text-[#0a192f]">{agent.name}</h3>
+                    <h3 className="font-serif font-bold text-base sm:text-lg text-[#0a192f]">{agent.name}</h3>
                     <p className="text-xs text-slate-500 font-medium">{agent.position}</p>
                     <p className="text-[11px] text-[#b38b38] font-semibold mt-0.5">{agent.officeName}</p>
                   </div>

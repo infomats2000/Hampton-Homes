@@ -322,48 +322,50 @@ export function SearchPortal({ defaultListingType = "RESIDENTIAL_SALE", title, s
 
 function PropertyCard({ item }: { item: MRIRawProperty }) {
   return (
-    <Card className="overflow-hidden group hover:shadow-xl transition-all">
-      <div className="relative aspect-4/3 overflow-hidden bg-slate-100">
-        <img
-          src={item.photos[0]}
-          alt={item.headline}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute top-3 left-3 flex gap-2">
-          <Badge variant={item.listingType === "RESIDENTIAL_SALE" ? "sale" : "rent"}>
-            {item.listingType === "RESIDENTIAL_SALE" ? "For Sale" : "For Rent"}
-          </Badge>
-          <Badge variant="gold">MRI Verified</Badge>
-        </div>
-        <div className="absolute bottom-3 left-3 right-3 bg-gradient-to-t from-black/80 to-transparent p-3 rounded-lg text-white">
-          <p className="font-serif text-xl font-bold">{item.priceDisplay}</p>
-        </div>
-      </div>
-
-      <CardContent className="p-6 space-y-3">
-        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-          <MapPin className="h-3.5 w-3.5 text-[#c5a059]" />
-          <span>{item.streetNumber} {item.streetName}, {item.suburb} {item.state} {item.postcode}</span>
+    <Link href={`/property/${item.externalId}`} className="block group">
+      <Card className="overflow-hidden h-full hover:shadow-xl transition-all border border-slate-200">
+        <div className="relative aspect-4/3 overflow-hidden bg-slate-100">
+          <img
+            src={item.photos[0]}
+            alt={item.headline}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          <div className="absolute top-3 left-3 flex gap-2">
+            <Badge variant={item.listingType === "RESIDENTIAL_SALE" ? "sale" : "rent"}>
+              {item.listingType === "RESIDENTIAL_SALE" ? "For Sale" : "For Rent"}
+            </Badge>
+            <Badge variant="gold">MRI Verified</Badge>
+          </div>
+          <div className="absolute bottom-3 left-3 right-3 bg-gradient-to-t from-black/80 to-transparent p-3 rounded-lg text-white">
+            <p className="font-serif text-xl font-bold">{item.priceDisplay}</p>
+          </div>
         </div>
 
-        <h3 className="font-serif font-bold text-lg text-[#0a192f] line-clamp-1 group-hover:text-[#c5a059] transition-colors">
-          {item.headline}
-        </h3>
+        <CardContent className="p-5 sm:p-6 space-y-3">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+            <MapPin className="h-3.5 w-3.5 text-[#c5a059] shrink-0" />
+            <span className="truncate">{item.streetNumber} {item.streetName}, {item.suburb} {item.state}</span>
+          </div>
 
-        <div className="flex items-center gap-4 text-xs font-semibold text-slate-600 pt-2 border-t border-slate-100">
-          <span className="flex items-center gap-1"><Bed className="h-4 w-4 text-slate-400" /> {item.bedrooms} Beds</span>
-          <span className="flex items-center gap-1"><Bath className="h-4 w-4 text-slate-400" /> {item.bathrooms} Baths</span>
-          <span className="flex items-center gap-1"><Car className="h-4 w-4 text-slate-400" /> {item.carSpaces} Cars</span>
-        </div>
+          <h3 className="font-serif font-bold text-base sm:text-lg text-[#0a192f] line-clamp-1 group-hover:text-[#c5a059] transition-colors">
+            {item.headline}
+          </h3>
 
-        <Link href={`/property/${item.externalId}`} className="block pt-2">
-          <Button variant="outline" className="w-full justify-between text-xs">
-            <span>View Details</span>
-            <span>→</span>
-          </Button>
-        </Link>
-      </CardContent>
-    </Card>
+          <div className="flex items-center gap-4 text-xs font-semibold text-slate-600 pt-2 border-t border-slate-100">
+            <span className="flex items-center gap-1"><Bed className="h-4 w-4 text-slate-400" /> {item.bedrooms} Beds</span>
+            <span className="flex items-center gap-1"><Bath className="h-4 w-4 text-slate-400" /> {item.bathrooms} Baths</span>
+            <span className="flex items-center gap-1"><Car className="h-4 w-4 text-slate-400" /> {item.carSpaces} Cars</span>
+          </div>
+
+          <div className="pt-2">
+            <Button variant="outline" className="w-full justify-between text-xs group-hover:bg-[#0a192f] group-hover:text-white transition-colors">
+              <span>View Details</span>
+              <span>→</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
 
