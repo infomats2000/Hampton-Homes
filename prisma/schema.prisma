@@ -1,0 +1,484 @@
+// Prisma Schema for Hampton Homes Australian Real Estate Platform
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum SystemRole {
+  SUPER_ADMIN
+  ADMIN
+  MARKETING_ADMIN
+  OFFICE_MANAGER
+  AGENT
+  SUPPORT
+  CUSTOMER
+}
+
+enum PropertyStatus {
+  DRAFT
+  COMING_SOON
+  FOR_SALE
+  FOR_RENT
+  AUCTION
+  UNDER_OFFER
+  UNDER_CONTRACT
+  SOLD
+  LEASED
+  WITHDRAWN
+  OFF_MARKET
+}
+
+enum ListingType {
+  RESIDENTIAL_SALE
+  RESIDENTIAL_RENT
+  COMMERCIAL_SALE
+  COMMERCIAL_RENT
+  PROJECT
+}
+
+enum LeadStatus {
+  NEW
+  ASSIGNED
+  CONTACTED
+  QUALIFIED
+  APPOINTMENT_BOOKED
+  APPRAISAL_COMPLETED
+  NEGOTIATING
+  WON
+  LOST
+  ARCHIVED
+}
+
+enum LeadType {
+  BUYER
+  SELLER
+  TENANT
+  LANDLORD
+  APPRAISAL
+  PROPERTY_ENQUIRY
+  INSPECTION
+  COMMERCIAL
+  GENERAL
+}
+
+enum SyncStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  WARNING
+  FAILED
+}
+
+enum MediaType {
+  PHOTO
+  FLOORPLAN
+  VIDEO
+  VIRTUAL_TOUR
+  DOCUMENT
+}
+
+model User {
+  id               String           @id @default(uuid())
+  email            String           @unique
+  passwordHash     String
+  firstName        String
+  lastName         String
+  phone            String?
+  avatarUrl        String?
+  isActive         Boolean          @default(true)
+  isEmailVerified  Boolean          @default(false)
+  mfaEnabled       Boolean          @default(false)
+  lastLoginAt      DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  userRoles        UserRole[]
+  customerProfile  CustomerProfile?
+  agentProfile     Agent?
+  auditLogs        AuditLog[]       @relation("ActorAuditLogs")
+
+  @@index([email])
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  isSystem    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  userRoles   UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  code        String           @unique // e.g. "property.view", "lead.assign"
+  name        String
+  module      String
+  description String?
+
+  roles       RolePermission[]
+
+  @@index([code])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model UserRole {
+  userId String
+  roleId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model CustomerProfile {
+  id             String    @id @default(uuid())
+  userId         String    @unique
+  preferences    Json?     @default("{}")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  favourites     Favourite[]
+  savedSearches  SavedSearch[]
+  recentlyViewed RecentlyViewed[]
+}
+
+model Office {
+  id          String     @id @default(uuid())
+  name        String
+  slug        String     @unique
+  address     String
+  suburb      String
+  state       String     @default("NSW")
+  postcode    String
+  phone       String
+  email       String
+  description String?    @db.Text
+  isHeadOffice Boolean   @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  agents      Agent[]
+  leads       Lead[]
+}
+
+model Agent {
+  id           String     @id @default(uuid())
+  userId       String     @unique
+  officeId     String
+  bio          String?    @db.Text
+  photoUrl     String?
+  phone        String?
+  mobile       String?
+  position     String     @default("Sales Agent")
+  displayOrder Int        @default(0)
+  isFeatured   Boolean    @default(false)
+  isPublic     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  office       Office     @relation(fields: [officeId], references: [id])
+  assignedLeads Lead[]    @relation("AgentLeads")
+  listings     PropertyAgent[]
+}
+
+model Property {
+  id             String      @id @default(uuid())
+  streetNumber   String?
+  streetName     String
+  suburb         String
+  state          String      @default("NSW")
+  postcode       String
+  country        String      @default("Australia")
+  latitude       Float?
+  longitude      Float?
+  bedrooms       Int?
+  bathrooms      Int?
+  carSpaces      Int?
+  landAreaSqm    Float?
+  buildingAreaSqm Float?
+  propertyType   String      // House, Apartment, Townhouse, Villa, Land, Commercial
+  mriId          String?     @unique
+  mriProvider    String?     // "VAULT" | "PROPERTY_TREE"
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  listings       Listing[]
+  media          PropertyMedia[]
+  features       PropertyFeature[]
+  websiteOverride PropertyWebsiteOverride?
+  mappings       ExternalEntityMapping[]
+  leads          Lead[]
+
+  @@index([suburb, state, postcode])
+  @@index([mriId])
+}
+
+model Listing {
+  id             String          @id @default(uuid())
+  propertyId     String
+  listingType    ListingType     @default(RESIDENTIAL_SALE)
+  status         PropertyStatus  @default(FOR_SALE)
+  headline       String
+  description    String          @db.Text
+  priceDisplay   String          // e.g. "$1,250,000" or "Contact Agent"
+  priceNumeric   Float?
+  auctionDate    DateTime?
+  auctionLocation String?
+  availableDate  DateTime?
+  publishedAt    DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  property       Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  agents         PropertyAgent[]
+  inspections    PropertyInspection[]
+  enquiries      Enquiry[]
+
+  @@index([status, listingType])
+}
+
+model PropertyAgent {
+  listingId  String
+  agentId    String
+  isPrimary  Boolean  @default(true)
+
+  listing    Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  agent      Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@id([listingId, agentId])
+}
+
+model PropertyMedia {
+  id           String    @id @default(uuid())
+  propertyId   String
+  url          String
+  mediaType    MediaType @default(PHOTO)
+  title        String?
+  displayOrder Int       @default(0)
+  isPrimary    Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+
+  property     Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, mediaType])
+}
+
+model PropertyFeature {
+  id           String   @id @default(uuid())
+  propertyId   String
+  featureName  String
+  category     String?  // Interior, Exterior, Eco, Heating/Cooling
+
+  property     Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model PropertyInspection {
+  id           String   @id @default(uuid())
+  listingId    String
+  startTime    DateTime
+  endTime      DateTime
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model PropertyWebsiteOverride {
+  id                  String   @id @default(uuid())
+  propertyId          String   @unique
+  seoTitle            String?
+  seoDescription      String?
+  customHeadline      String?
+  customBadge         String?
+  isFeaturedHomepage  Boolean  @default(false)
+  isFeaturedSearch    Boolean  @default(false)
+  updatedAt           DateTime @updatedAt
+
+  property            Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model ExternalEntityMapping {
+  id                String   @id @default(uuid())
+  provider          String   // "VAULT" | "PROPERTY_TREE"
+  entityType        String   // "PROPERTY" | "AGENT" | "OFFICE"
+  externalId        String
+  internalId        String
+  propertyId        String?
+  externalUpdatedAt DateTime?
+  lastSyncedAt      DateTime @default(now())
+  syncHash          String?
+
+  property          Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, entityType, externalId])
+}
+
+model SyncJob {
+  id               String     @id @default(uuid())
+  provider         String
+  jobType          String     // INCREMENTAL | FULL_RECONCILIATION
+  status           SyncStatus @default(PENDING)
+  startedAt        DateTime   @default(now())
+  completedAt      DateTime?
+  recordsProcessed Int        @default(0)
+  recordsUpdated   Int        @default(0)
+  recordsFailed    Int        @default(0)
+  errorMessage     String?
+
+  logs             SyncLog[]
+  errors           SyncError[]
+}
+
+model SyncLog {
+  id         String   @id @default(uuid())
+  syncJobId  String
+  entityType String
+  externalId String
+  action     String   // CREATED | UPDATED | SKIPPED
+  message    String?
+  createdAt  DateTime @default(now())
+
+  syncJob    SyncJob  @relation(fields: [syncJobId], references: [id], onDelete: Cascade)
+}
+
+model SyncError {
+  id           String   @id @default(uuid())
+  syncJobId    String
+  entityType   String
+  externalId   String
+  errorMessage String   @db.Text
+  rawPayload   Json?
+  retryCount   Int      @default(0)
+  isResolved   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  syncJob      SyncJob  @relation(fields: [syncJobId], references: [id], onDelete: Cascade)
+}
+
+model Lead {
+  id            String     @id @default(uuid())
+  name          String
+  email         String
+  phone         String
+  leadType      LeadType   @default(PROPERTY_ENQUIRY)
+  status        LeadStatus @default(NEW)
+  priority      String     @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  source        String     @default("WEBSITE")
+  notes         String?    @db.Text
+  officeId      String?
+  agentId       String?
+  propertyId    String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  office        Office?    @relation(fields: [officeId], references: [id])
+  assignedAgent Agent?     @relation("AgentLeads", fields: [agentId], references: [id])
+  property      Property?  @relation(fields: [propertyId], references: [id])
+  activities    LeadActivity[]
+  enquiries     Enquiry[]
+}
+
+model LeadActivity {
+  id          String   @id @default(uuid())
+  leadId      String
+  actionType  String   // CREATED, ASSIGNED, STATUS_CHANGE, NOTE_ADDED
+  description String
+  actorName   String
+  createdAt   DateTime @default(now())
+
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model Enquiry {
+  id           String   @id @default(uuid())
+  listingId    String
+  leadId       String?
+  name         String
+  email        String
+  phone        String
+  message      String   @db.Text
+  mriPushed    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  lead         Lead?    @relation(fields: [leadId], references: [id])
+}
+
+model Favourite {
+  id                String          @id @default(uuid())
+  customerProfileId String
+  propertyId        String
+  createdAt         DateTime        @default(now())
+
+  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+}
+
+model SavedSearch {
+  id                String          @id @default(uuid())
+  customerProfileId String
+  name              String
+  criteria          Json
+  alertFrequency    String          @default("DAILY") // IMMEDIATELY, DAILY, WEEKLY
+  isEnabled         Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+
+  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+}
+
+model RecentlyViewed {
+  id                String          @id @default(uuid())
+  customerProfileId String
+  propertyId        String
+  viewedAt          DateTime        @default(now())
+
+  customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  actorId       String?
+  actorEmail    String?
+  action        String
+  entity        String
+  entityId      String?
+  previousValue Json?
+  newValue      Json?
+  ipAddress     String?
+  correlationId String?
+  createdAt     DateTime @default(now())
+
+  actor         User?    @relation("ActorAuditLogs", fields: [actorId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       Json
+  category    String   @default("GENERAL") // GENERAL, WEBSITE, PROPERTIES, SEARCH, LEADS, NOTIFICATIONS, SEO, INTEGRATIONS
+  description String?
+  isPublic    Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+}
