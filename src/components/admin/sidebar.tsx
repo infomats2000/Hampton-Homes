@@ -24,6 +24,11 @@ import {
   Activity,
   UserCheck,
   X,
+  Plug2,
+  Network,
+  FileSignature,
+  TrendingUp,
+  BookUser,
 } from "lucide-react";
 
 const ADMIN_MENU_GROUPS = [
@@ -36,6 +41,15 @@ const ADMIN_MENU_GROUPS = [
       { label: "Leads & Pipeline", href: "/admin/leads", icon: Users },
       { label: "Appraisal Requests", href: "/admin/appraisals", icon: Briefcase },
       { label: "Inspections", href: "/admin/inspections", icon: Calendar },
+    ],
+  },
+  {
+    title: "Integration Hub",
+    items: [
+      { label: "All Integrations", href: "/admin/integrations", icon: Network, badge: "Hub" },
+      { label: "Unified Contacts", href: "/admin/contacts", icon: BookUser },
+      { label: "Digital Documents", href: "/admin/documents", icon: FileSignature },
+      { label: "Property Intelligence", href: "/admin/property-intelligence", icon: TrendingUp, badge: "RP Data" },
     ],
   },
   {
@@ -70,6 +84,7 @@ const ADMIN_MENU_GROUPS = [
     ],
   },
 ];
+
 
 interface AdminSidebarProps {
   mobileOpen?: boolean;

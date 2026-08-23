@@ -481,3 +481,282 @@ model Setting {
   isPublic    Boolean  @default(false)
   updatedAt   DateTime @updatedAt
 }
+
+// ─── Integration Hub Enums ───────────────────────────────────────────────────
+
+enum IntegrationStatus {
+  CONNECTED
+  DEGRADED
+  DISCONNECTED
+  PENDING_SETUP
+}
+
+enum DocumentStatus {
+  DRAFT
+  SENT
+  VIEWED
+  SIGNED
+  COMPLETED
+  DECLINED
+  EXPIRED
+}
+
+enum AppointmentType {
+  APPRAISAL
+  INSPECTION
+  VIEWING
+  AUCTION
+  FOLLOW_UP
+  MEETING
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum PropertyInsightVisibility {
+  INTERNAL_ONLY
+  AGENT_ONLY
+  MANAGEMENT_ONLY
+}
+
+enum WebhookEventStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+  SKIPPED
+}
+
+enum ContactMatchAction {
+  PENDING
+  MERGED
+  KEPT_SEPARATE
+  DISMISSED
+}
+
+// ─── Integration Hub Models ──────────────────────────────────────────────────
+
+/// Stores vendor integration configuration, status, and encrypted credentials
+model IntegrationProviderConfig {
+  id               String            @id @default(uuid())
+  provider         String            @unique // HOMEPASS | FLK | CORELOGIC | PROPERTYME | GOOGLE | MICROSOFT | APPLE | MRI_VAULT | MRI_PROPERTY_TREE
+  displayName      String
+  status           IntegrationStatus @default(PENDING_SETUP)
+  isEnabled        Boolean           @default(false)
+  credentialsMasked Json?            // { apiKey: "••••1234", webhookSecret: "••••abcd" }
+  credentialsEnc   String?           @db.Text // AES-256-GCM encrypted JSON blob
+  featureFlags     Json?             @default("{}") // { syncContacts: true, syncCalendar: false }
+  priority         Int               @default(0) // Source-of-truth priority order
+  lastHealthCheckAt DateTime?
+  lastSyncAt       DateTime?
+  webhookUrl       String?
+  webhookSecret    String?
+  notes            String?           @db.Text
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([provider])
+  @@index([status])
+}
+
+/// OAuth 2.0 server-side token storage for Google, Microsoft, PropertyMe, Homepass
+model ExternalAccountConnection {
+  id              String   @id @default(uuid())
+  agentId         String
+  provider        String   // GOOGLE | MICROSOFT | PROPERTYME | HOMEPASS
+  externalUserId  String?
+  externalEmail   String?
+  accessToken     String?  @db.Text
+  refreshToken    String?  @db.Text
+  tokenExpiresAt  DateTime?
+  scope           String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([agentId, provider])
+  @@index([agentId])
+  @@index([provider])
+}
+
+/// Maps internal Lead/Agent IDs to external vendor contact IDs
+model ContactExternalLink {
+  id            String   @id @default(uuid())
+  internalType  String   // LEAD | AGENT | CUSTOMER
+  internalId    String
+  provider      String   // GOOGLE | MICROSOFT | HOMEPASS | PROPERTYME | APPLE
+  externalId    String
+  syncedAt      DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([internalType, internalId, provider])
+  @@index([internalId])
+}
+
+/// Agent calendar connection settings for Google/MS Outlook sync
+model CalendarConnection {
+  id              String   @id @default(uuid())
+  agentId         String
+  provider        String   // GOOGLE | MICROSOFT | APPLE
+  calendarId      String?  // External calendar ID
+  calendarName    String?
+  isEnabled       Boolean  @default(true)
+  syncDirection   String   @default("BIDIRECTIONAL") // PUSH | PULL | BIDIRECTIONAL
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([agentId, provider])
+  events          ExternalCalendarEvent[]
+}
+
+/// Synced calendar event mapping to prevent duplicates
+model ExternalCalendarEvent {
+  id                  String   @id @default(uuid())
+  calendarConnectionId String
+  internalAppointmentId String?
+  externalEventId     String
+  externalProvider    String
+  syncedAt            DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  calendarConnection  CalendarConnection @relation(fields: [calendarConnectionId], references: [id], onDelete: Cascade)
+
+  @@unique([calendarConnectionId, externalEventId])
+  @@index([internalAppointmentId])
+}
+
+/// Unified appointment model for Appraisals, Inspections, Viewings, Auctions
+model Appointment {
+  id              String            @id @default(uuid())
+  type            AppointmentType
+  status          AppointmentStatus @default(SCHEDULED)
+  title           String
+  description     String?           @db.Text
+  startTime       DateTime
+  endTime         DateTime
+  locationAddress String?
+  propertyId      String?
+  agentId         String?
+  leadId          String?
+  homepassEventId String?           // Homepass external event ID
+  icsExported     Boolean           @default(false)
+  notes           String?           @db.Text
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([type, status])
+  @@index([propertyId])
+  @@index([agentId])
+  @@index([startTime])
+}
+
+/// Vendor-neutral digital agreement model (FLK it over)
+model Document {
+  id              String         @id @default(uuid())
+  type            String         // SALE_CONTRACT | TENANCY_AGREEMENT | LEASE_RENEWAL | OTHER
+  status          DocumentStatus @default(DRAFT)
+  title           String
+  propertyId      String?
+  agentId         String?
+  leadId          String?
+  signerName      String?
+  signerEmail     String?
+  sentAt          DateTime?
+  viewedAt        DateTime?
+  signedAt        DateTime?
+  completedAt     DateTime?
+  expiresAt       DateTime?
+  notes           String?        @db.Text
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  externalLinks   DocumentExternalLink[]
+
+  @@index([status])
+  @@index([propertyId])
+  @@index([agentId])
+}
+
+/// FLK it over external document ID mapping
+model DocumentExternalLink {
+  id              String   @id @default(uuid())
+  documentId      String
+  provider        String   // FLK
+  externalId      String   // FLK document/envelope ID
+  externalUrl     String?
+  syncedAt        DateTime @default(now())
+
+  document        Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, provider])
+  @@unique([provider, externalId])
+}
+
+/// CoreLogic/RP Data licensed property intelligence record (INTERNAL/AGENT use only)
+model PropertyInsight {
+  id               String                    @id @default(uuid())
+  propertyId       String?
+  addressFull      String
+  suburb           String?
+  state            String?
+  postcode         String?
+  estimatedValue   Float?
+  estimatedValueLow Float?
+  estimatedValueHigh Float?
+  lastSaleDate     DateTime?
+  lastSalePrice    Float?
+  daysOnMarket     Int?
+  comparableSales  Json?                     // Array of recent comparable sales
+  rentalEstimate   Float?
+  landValue        Float?
+  zoning           String?
+  visibility       PropertyInsightVisibility @default(INTERNAL_ONLY)
+  source           String                    @default("CORELOGIC")
+  fetchedAt        DateTime                  @default(now())
+  expiresAt        DateTime?
+  rawResponse      Json?
+
+  @@index([propertyId])
+  @@index([addressFull])
+}
+
+/// Incoming webhook event log from Homepass, FLK, PropertyMe
+model WebhookEvent {
+  id              String             @id @default(uuid())
+  provider        String             // HOMEPASS | FLK | PROPERTYME
+  eventType       String             // visitor.checkin | document.signed | tenancy.updated
+  status          WebhookEventStatus @default(RECEIVED)
+  correlationId   String?            @unique // Idempotency key from vendor
+  signatureValid  Boolean?
+  rawPayload      Json
+  processedAt     DateTime?
+  errorMessage    String?            @db.Text
+  retryCount      Int                @default(0)
+  createdAt       DateTime           @default(now())
+
+  @@index([provider, eventType])
+  @@index([status])
+  @@index([createdAt])
+}
+
+/// Duplicate contact review queue (Merge / Keep Separate)
+model ContactMatchCandidate {
+  id              String             @id @default(uuid())
+  primaryType     String             // LEAD | AGENT | CUSTOMER
+  primaryId       String
+  matchType       String             // LEAD | AGENT | CUSTOMER
+  matchId         String
+  matchScore      Float              // 0.0 - 1.0 confidence score
+  matchReason     String?            // Email match, Phone match, Name fuzzy
+  action          ContactMatchAction @default(PENDING)
+  resolvedAt      DateTime?
+  resolvedBy      String?
+  createdAt       DateTime           @default(now())
+
+  @@index([action])
+  @@index([primaryId])
+}
