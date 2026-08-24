@@ -17,6 +17,7 @@ import {
   Activity,
   Settings,
 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 type IntegrationStatus = "CONNECTED" | "DEGRADED" | "DISCONNECTED" | "PENDING_SETUP";
 
@@ -203,23 +204,23 @@ export default function IntegrationsPage() {
       {/* Summary Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Total Integrations", value: PROVIDERS.length, icon: Plug2, color: "text-slate-300" },
-          { label: "Connected", value: connectedCount, icon: CheckCircle2, color: "text-emerald-400" },
-          { label: "Setup Required", value: pendingCount, icon: Clock, color: "text-amber-400" },
-          { label: "Issues", value: degradedCount, icon: AlertTriangle, color: "text-red-400" },
+          { label: "Total Integrations", value: PROVIDERS.length, icon: Plug2, color: "text-[#0a192f]" },
+          { label: "Connected", value: connectedCount, icon: CheckCircle2, color: "text-emerald-600" },
+          { label: "Setup Required", value: pendingCount, icon: Clock, color: "text-amber-600" },
+          { label: "Issues", value: degradedCount, icon: AlertTriangle, color: "text-rose-600" },
         ].map((stat) => {
           const Icon = stat.icon;
           return (
             <div
               key={stat.label}
-              className="bg-[#0d2444]/80 border border-slate-800 rounded-xl p-4 flex items-center gap-4"
+              className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center gap-4 shadow-xs"
             >
-              <div className="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
+              <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">
                 <Icon className={`h-5 w-5 ${stat.color}`} />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white">{stat.value}</p>
-                <p className="text-xs text-slate-400">{stat.label}</p>
+                <p className="font-serif text-2xl font-bold text-[#0a192f]">{stat.value}</p>
+                <p className="text-xs text-slate-500 font-medium">{stat.label}</p>
               </div>
             </div>
           );
@@ -227,29 +228,33 @@ export default function IntegrationsPage() {
       </div>
 
       {/* Source-of-Truth Legend */}
-      <div className="bg-[#0d2444]/60 border border-[#c5a059]/20 rounded-xl p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <Shield className="h-4 w-4 text-[#c5a059]" />
-          <h2 className="text-sm font-semibold text-[#c5a059] uppercase tracking-wide">
-            Source-of-Truth Engine
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-          {[
-            { domain: "Sales Listings", primary: "MRI Vault" },
-            { domain: "Rental Marketing", primary: "MRI Property Tree" },
-            { domain: "Open Home Attendees", primary: "Homepass" },
-            { domain: "Property Intelligence", primary: "CoreLogic / RP Data" },
-            { domain: "Digital Documents", primary: "FLK it over" },
-            { domain: "Tenancy Records", primary: "PropertyMe" },
-          ].map((sot) => (
-            <div key={sot.domain} className="flex items-center justify-between gap-2 bg-slate-800/40 rounded-lg px-3 py-2">
-              <span className="text-slate-400">{sot.domain}</span>
-              <span className="text-white font-medium">{sot.primary}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Card className="border border-slate-200 shadow-xs">
+        <CardHeader className="p-5 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-[#c5a059]" />
+            <CardTitle className="text-sm font-serif font-bold text-[#0a192f] uppercase tracking-wide">
+              Source-of-Truth Synchronization Engine
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="p-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+            {[
+              { domain: "Sales Listings", primary: "MRI Vault" },
+              { domain: "Rental Marketing", primary: "MRI Property Tree" },
+              { domain: "Open Home Attendees", primary: "Homepass" },
+              { domain: "Property Intelligence", primary: "CoreLogic / RP Data" },
+              { domain: "Digital Documents", primary: "FLK it over" },
+              { domain: "Tenancy Records", primary: "PropertyMe" },
+            ].map((sot) => (
+              <div key={sot.domain} className="flex items-center justify-between gap-2 bg-slate-50 rounded-xl border border-slate-200/80 px-3.5 py-2.5">
+                <span className="text-slate-600 font-medium">{sot.domain}</span>
+                <span className="text-[#0a192f] font-bold">{sot.primary}</span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
@@ -258,28 +263,13 @@ export default function IntegrationsPage() {
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs ${
                 filter === s
-                  ? "bg-[#c5a059] text-slate-900"
-                  : "bg-slate-800 text-slate-400 hover:text-white"
+                  ? "bg-[#0a192f] text-white shadow-md"
+                  : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
               }`}
             >
-              {s === "ALL" ? "All" : STATUS_CONFIG[s as IntegrationStatus]?.label ?? s}
-            </button>
-          ))}
-        </div>
-        <div className="flex gap-2 flex-wrap sm:ml-auto">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCategoryFilter(cat)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                categoryFilter === cat
-                  ? "bg-slate-600 text-white"
-                  : "bg-slate-800/50 text-slate-400 hover:text-white"
-              }`}
-            >
-              {cat}
+              {s === "ALL" ? "All Statuses" : STATUS_CONFIG[s as IntegrationStatus]?.label ?? s}
             </button>
           ))}
         </div>
@@ -294,67 +284,56 @@ export default function IntegrationsPage() {
           return (
             <div
               key={provider.key}
-              className="bg-[#0d2444]/80 border border-slate-800 rounded-xl p-5 flex flex-col gap-4 hover:border-slate-600 transition-all group"
+              className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 hover:border-[#c5a059] transition-all shadow-xs group"
             >
               {/* Card Header */}
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div
-                    className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: provider.color + "20", border: `1px solid ${provider.color}40` }}
+                    className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 shadow-2xs"
+                    style={{ backgroundColor: provider.color + "15", border: `1px solid ${provider.color}40` }}
                   >
                     <Zap className="h-5 w-5" style={{ color: provider.color }} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white text-sm">{provider.displayName}</h3>
-                    <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">
+                    <h3 className="font-serif font-bold text-[#0a192f] text-sm">{provider.displayName}</h3>
+                    <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
                       {provider.category}
                     </span>
                   </div>
                 </div>
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-bold border ${statusCfg.bg} ${statusCfg.border} ${statusCfg.color}`}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusCfg.bg} ${statusCfg.border} ${statusCfg.color}`}
                 >
                   <StatusIcon className="h-3 w-3" />
                   {statusCfg.label}
                 </span>
               </div>
 
-              <p className="text-slate-400 text-xs leading-relaxed">{provider.description}</p>
+              <p className="text-slate-600 text-xs leading-relaxed font-light">{provider.description}</p>
 
               {/* Sync Info */}
               {provider.status === "CONNECTED" && (
-                <div className="flex items-center justify-between text-xs bg-slate-800/40 rounded-lg px-3 py-2">
-                  <span className="text-slate-400">Last sync</span>
+                <div className="flex items-center justify-between text-xs bg-slate-50 rounded-xl border border-slate-200/80 px-3 py-2 font-medium">
+                  <span className="text-slate-500">Last sync</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-emerald-400 font-medium">{provider.lastSync}</span>
+                    <span className="text-emerald-700 font-bold">{provider.lastSync}</span>
                     {provider.recordsSynced && (
-                      <span className="text-slate-500">· {provider.recordsSynced} records</span>
+                      <span className="text-slate-400">· {provider.recordsSynced} records</span>
                     )}
                   </div>
                 </div>
               )}
 
               {/* Card Footer */}
-              <div className="flex items-center gap-2 mt-auto pt-2 border-t border-slate-800">
+              <div className="flex items-center gap-2 mt-auto pt-3 border-t border-slate-100">
                 <Link
                   href={`/admin/integrations/${provider.key.toLowerCase()}`}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors"
                 >
-                  <Settings className="h-3.5 w-3.5" />
-                  Configure
+                  <Settings className="h-3.5 w-3.5 text-[#c5a059]" />
+                  Configure Provider
                 </Link>
-                {provider.docsUrl && (
-                  <a
-                    href={provider.docsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 px-3 py-2 bg-slate-800/50 hover:bg-slate-800 text-slate-500 hover:text-slate-300 rounded-lg text-xs transition-colors"
-                    title="View documentation"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                )}
               </div>
             </div>
           );
@@ -362,12 +341,16 @@ export default function IntegrationsPage() {
       </div>
 
       {/* Webhook Endpoints Reference */}
-      <div className="bg-[#0d2444]/60 border border-slate-800 rounded-xl p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Activity className="h-4 w-4 text-[#c5a059]" />
-          <h2 className="text-sm font-semibold text-white">Webhook Endpoints</h2>
-        </div>
-        <div className="space-y-2">
+      <Card className="border border-slate-200 shadow-xs">
+        <CardHeader className="p-5 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <Activity className="h-4 w-4 text-[#c5a059]" />
+            <CardTitle className="text-sm font-serif font-bold text-[#0a192f]">
+              Live Inbound Webhook Endpoints
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="p-5 space-y-2">
           {[
             { provider: "Homepass", endpoint: "/api/webhooks/homepass", secret: "HOMEPASS_WEBHOOK_SECRET" },
             { provider: "FLK it over", endpoint: "/api/webhooks/flk", secret: "FLK_WEBHOOK_SECRET" },
@@ -375,23 +358,23 @@ export default function IntegrationsPage() {
           ].map((w) => (
             <div
               key={w.provider}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/60 rounded-lg px-4 py-3"
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3"
             >
               <div className="flex items-center gap-3">
-                <span className="text-xs font-medium text-white">{w.provider}</span>
-                <ChevronRight className="h-3 w-3 text-slate-600" />
-                <code className="text-xs text-[#c5a059] font-mono">{w.endpoint}</code>
+                <span className="text-xs font-bold text-[#0a192f]">{w.provider}</span>
+                <ChevronRight className="h-3 w-3 text-slate-400" />
+                <code className="text-xs text-sky-700 font-mono font-semibold">{w.endpoint}</code>
               </div>
               <code className="text-[10px] text-slate-500 font-mono">{w.secret}</code>
             </div>
           ))}
-        </div>
-        <p className="mt-4 text-[11px] text-slate-500">
-          All webhooks verify HMAC-SHA256 signatures. Set environment variables in your Vercel dashboard.
-          Export endpoints: <code className="text-slate-400">/api/contacts/[id]/vcard</code> ·{" "}
-          <code className="text-slate-400">/api/appointments/[id]/ics</code>
-        </p>
-      </div>
+        </CardContent>
+      </Card>
+      <p className="mt-4 text-[11px] text-slate-500 font-medium">
+        All webhooks verify HMAC-SHA256 signatures. Set environment variables in your Vercel dashboard.
+        Export endpoints: <code className="text-slate-700 font-mono">/api/contacts/[id]/vcard</code> ·{" "}
+        <code className="text-slate-700 font-mono">/api/appointments/[id]/ics</code>
+      </p>
     </div>
   );
 }

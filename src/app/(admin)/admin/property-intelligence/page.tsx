@@ -21,6 +21,7 @@ import {
   CheckCircle2,
   Lock,
 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 interface ComparableSale {
   address: string;
@@ -157,14 +158,14 @@ export default function PropertyIntelligencePage() {
       </div>
 
       {/* Licensing Notice */}
-      <div className="bg-[#0d2444]/60 border border-[#c5a059]/20 rounded-xl px-5 py-4 flex items-start gap-3">
-        <Shield className="h-5 w-5 text-[#c5a059] shrink-0 mt-0.5" />
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 flex items-start gap-3 shadow-xs">
+        <Shield className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-medium text-[#c5a059]">CoreLogic / RP Data Licensing Compliance</p>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs font-bold text-amber-900 uppercase tracking-wide">CoreLogic / RP Data Licensing Compliance</p>
+          <p className="text-xs text-amber-800 mt-1 leading-relaxed">
             All property intelligence data is sourced from CoreLogic and governed by strict licensing terms.
-            Valuation estimates and comparable sales data are for <strong className="text-white">internal agency use only</strong> and
-            must never be displayed to the public or shared with clients without explicit authorisation.
+            Valuation estimates and comparable sales data are for <strong className="font-bold text-amber-950">internal agency use only</strong> and
+            must never be displayed to the public without explicit authorisation.
           </p>
         </div>
       </div>
@@ -173,13 +174,13 @@ export default function PropertyIntelligencePage() {
         {/* Left: Property List */}
         <div className="space-y-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
               placeholder="Search by address or suburb..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-[#0d2444]/80 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-[#c5a059]/50"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0a192f]"
             />
           </div>
 
@@ -188,34 +189,40 @@ export default function PropertyIntelligencePage() {
               <button
                 key={report.address}
                 onClick={() => setSelectedReport(report)}
-                className={`w-full text-left p-4 rounded-xl border transition-all ${
+                className={`w-full text-left p-4 rounded-2xl border transition-all ${
                   selectedReport?.address === report.address
-                    ? "bg-[#1a365d] border-[#c5a059]/40"
-                    : "bg-[#0d2444]/60 border-slate-800 hover:border-slate-700"
+                    ? "bg-[#0a192f] text-white border-[#0a192f] shadow-md"
+                    : "bg-white text-slate-800 border-slate-200 hover:border-slate-300 shadow-xs"
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="font-semibold text-white text-sm">{report.address}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">{report.suburb} {report.state} {report.postcode}</p>
+                    <p className={`font-bold text-sm ${selectedReport?.address === report.address ? "text-white" : "text-[#0a192f]"}`}>
+                      {report.address}
+                    </p>
+                    <p className={`text-xs mt-0.5 ${selectedReport?.address === report.address ? "text-slate-300" : "text-slate-500"}`}>
+                      {report.suburb} {report.state} {report.postcode}
+                    </p>
                     <div className="flex items-center gap-2 mt-2 text-xs">
-                      <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[10px] border border-amber-500/20">
+                      <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30">
                         {report.visibility === "INTERNAL_ONLY" ? "Internal Only" : "Agent Only"}
                       </span>
-                      <span className="text-slate-500">{report.propertyType}</span>
+                      <span className={selectedReport?.address === report.address ? "text-slate-300" : "text-slate-500"}>
+                        {report.propertyType}
+                      </span>
                     </div>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-slate-500 shrink-0 mt-1" />
+                  <ChevronRight className={`h-4 w-4 shrink-0 mt-1 ${selectedReport?.address === report.address ? "text-[#c5a059]" : "text-slate-400"}`} />
                 </div>
               </button>
             ))}
           </div>
 
-          <div className="bg-[#0d2444]/40 border border-slate-800 rounded-xl p-4 text-center">
-            <p className="text-xs text-slate-400 mb-3">Lookup a new property from CoreLogic</p>
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 text-center shadow-xs">
+            <p className="text-xs text-slate-500 mb-2 font-medium">Lookup a new property from CoreLogic</p>
             <a
               href="/admin/integrations/corelogic"
-              className="text-xs text-[#c5a059] hover:underline flex items-center justify-center gap-1"
+              className="text-xs text-sky-700 font-bold hover:underline flex items-center justify-center gap-1"
             >
               Configure CoreLogic API
               <ChevronRight className="h-3 w-3" />
@@ -227,153 +234,159 @@ export default function PropertyIntelligencePage() {
         {r ? (
           <div className="lg:col-span-2 space-y-5">
             {/* Property Summary */}
-            <div className="bg-[#0d2444]/80 border border-slate-800 rounded-xl p-6">
-              <div className="flex items-start justify-between gap-3 mb-5">
-                <div>
-                  <h2 className="text-xl font-bold text-white">{r.address}</h2>
-                  <div className="flex items-center gap-1.5 mt-1 text-sm text-slate-400">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {r.suburb} {r.state} {r.postcode} · {r.propertyType}
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowValues(!showValues)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 text-slate-400 hover:text-white rounded-lg text-xs transition-colors"
-                >
-                  {showValues ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                  {showValues ? "Hide Values" : "Show Values"}
-                </button>
-              </div>
-
-              {/* Property Stats */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-                {[
-                  { icon: Bed, label: "Bedrooms", value: r.bedrooms ?? "—" },
-                  { icon: Bath, label: "Bathrooms", value: r.bathrooms ?? "—" },
-                  { icon: Car, label: "Car Spaces", value: r.carSpaces ?? "—" },
-                  { icon: Maximize, label: "Land", value: r.landAreaSqm ? `${r.landAreaSqm}m²` : "—" },
-                ].map((stat) => {
-                  const Icon = stat.icon;
-                  return (
-                    <div key={stat.label} className="bg-slate-800/40 rounded-lg p-3 text-center">
-                      <Icon className="h-4 w-4 text-slate-400 mx-auto mb-1" />
-                      <p className="text-lg font-bold text-white">{stat.value}</p>
-                      <p className="text-[10px] text-slate-500">{stat.label}</p>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Valuation */}
-              <div className="bg-gradient-to-br from-[#1a365d] to-[#0d2444] border border-[#c5a059]/20 rounded-xl p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <DollarSign className="h-4 w-4 text-[#c5a059]" />
-                  <h3 className="font-semibold text-white text-sm">Estimated Market Value</h3>
-                  <span className="ml-auto text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
-                    INTERNAL ONLY
-                  </span>
-                </div>
-                {showValues ? (
-                  <>
-                    <p className="text-4xl font-bold text-[#c5a059] mb-2">{formatCurrency(r.estimatedValue)}</p>
-                    <div className="flex items-center gap-4 text-sm text-slate-400">
-                      <span>Low: <span className="text-white">{formatCurrency(r.estimatedValueLow)}</span></span>
-                      <span>High: <span className="text-white">{formatCurrency(r.estimatedValueHigh)}</span></span>
-                    </div>
-                    {r.rentalEstimate && (
-                      <div className="mt-3 pt-3 border-t border-slate-700 flex items-center gap-4 text-sm text-slate-400">
-                        <span>Rental Estimate: <span className="text-white">${r.rentalEstimate}/wk</span></span>
-                        {r.rentalYield && <span>Yield: <span className="text-emerald-400">{r.rentalYield}% p.a.</span></span>}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <EyeOff className="h-4 w-4" />
-                    <span className="text-sm">Values hidden</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Sale History */}
-            <div className="bg-[#0d2444]/80 border border-slate-800 rounded-xl p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <Calendar className="h-4 w-4 text-[#c5a059]" />
-                <h3 className="font-semibold text-white text-sm">Sale History</h3>
-              </div>
-              {r.lastSaleDate && r.lastSalePrice && (
-                <div className="flex items-center justify-between bg-slate-800/40 rounded-lg px-4 py-3">
+            <Card className="border border-slate-200 shadow-xs">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between gap-3 mb-5">
                   <div>
-                    <p className="text-sm font-medium text-white">{showValues ? formatCurrency(r.lastSalePrice) : "••••••••"}</p>
-                    <p className="text-xs text-slate-400">Last sale · {r.lastSaleDate}</p>
+                    <h2 className="font-serif text-2xl font-bold text-[#0a192f]">{r.address}</h2>
+                    <div className="flex items-center gap-1.5 mt-1 text-xs font-semibold text-slate-500">
+                      <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                      {r.suburb} {r.state} {r.postcode} · {r.propertyType}
+                    </div>
                   </div>
-                  {r.daysOnMarket && (
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-white">{r.daysOnMarket} days</p>
-                      <p className="text-xs text-slate-400">Days on market</p>
+                  <button
+                    onClick={() => setShowValues(!showValues)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold transition-colors"
+                  >
+                    {showValues ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                    {showValues ? "Hide Values" : "Show Values"}
+                  </button>
+                </div>
+
+                {/* Property Stats */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                  {[
+                    { icon: Bed, label: "Bedrooms", value: r.bedrooms ?? "—" },
+                    { icon: Bath, label: "Bathrooms", value: r.bathrooms ?? "—" },
+                    { icon: Car, label: "Car Spaces", value: r.carSpaces ?? "—" },
+                    { icon: Maximize, label: "Land", value: r.landAreaSqm ? `${r.landAreaSqm}m²` : "—" },
+                  ].map((stat) => {
+                    const Icon = stat.icon;
+                    return (
+                      <div key={stat.label} className="bg-slate-50 rounded-xl border border-slate-200/80 p-3 text-center">
+                        <Icon className="h-4 w-4 text-slate-400 mx-auto mb-1" />
+                        <p className="font-serif text-lg font-bold text-[#0a192f]">{stat.value}</p>
+                        <p className="text-[10px] text-slate-500 font-semibold uppercase">{stat.label}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Valuation */}
+                <div className="bg-[#071325] text-white border border-slate-800 rounded-2xl p-5 shadow-md">
+                  <div className="flex items-center gap-2 mb-4">
+                    <DollarSign className="h-4 w-4 text-[#c5a059]" />
+                    <h3 className="font-serif font-bold text-white text-sm">Estimated Market Value</h3>
+                    <span className="ml-auto text-[10px] font-bold text-amber-300 bg-amber-500/20 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
+                      INTERNAL ONLY
+                    </span>
+                  </div>
+                  {showValues ? (
+                    <>
+                      <p className="font-serif text-4xl font-bold text-[#c5a059] mb-2">{formatCurrency(r.estimatedValue)}</p>
+                      <div className="flex items-center gap-4 text-xs font-medium text-slate-300">
+                        <span>Low: <span className="text-white font-bold">{formatCurrency(r.estimatedValueLow)}</span></span>
+                        <span>High: <span className="text-white font-bold">{formatCurrency(r.estimatedValueHigh)}</span></span>
+                      </div>
+                      {r.rentalEstimate && (
+                        <div className="mt-3 pt-3 border-t border-slate-800 flex items-center gap-4 text-xs font-medium text-slate-300">
+                          <span>Rental Estimate: <span className="text-white font-bold">${r.rentalEstimate}/wk</span></span>
+                          {r.rentalYield && <span>Yield: <span className="text-emerald-400 font-bold">{r.rentalYield}% p.a.</span></span>}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <EyeOff className="h-4 w-4" />
+                      <span className="text-sm">Values hidden</span>
                     </div>
                   )}
                 </div>
-              )}
-              {r.landValue && (
-                <div className="flex items-center justify-between bg-slate-800/40 rounded-lg px-4 py-3 mt-2">
-                  <p className="text-sm text-slate-300">Land Value</p>
-                  <p className="text-sm font-medium text-white">{showValues ? formatCurrency(r.landValue) : "••••••••"}</p>
+              </CardContent>
+            </Card>
+
+            {/* Sale History */}
+            <Card className="border border-slate-200 shadow-xs">
+              <CardContent className="p-5 space-y-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="h-4 w-4 text-[#c5a059]" />
+                  <h3 className="font-serif font-bold text-[#0a192f] text-sm">Sale History</h3>
                 </div>
-              )}
-              {r.zoning && (
-                <div className="flex items-center justify-between bg-slate-800/40 rounded-lg px-4 py-3 mt-2">
-                  <p className="text-sm text-slate-300">Zoning</p>
-                  <p className="text-sm font-medium text-white">{r.zoning}</p>
-                </div>
-              )}
-            </div>
+                {r.lastSaleDate && r.lastSalePrice && (
+                  <div className="flex items-center justify-between bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3">
+                    <div>
+                      <p className="text-sm font-bold text-[#0a192f]">{showValues ? formatCurrency(r.lastSalePrice) : "••••••••"}</p>
+                      <p className="text-xs text-slate-500">Last sale · {r.lastSaleDate}</p>
+                    </div>
+                    {r.daysOnMarket && (
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-[#0a192f]">{r.daysOnMarket} days</p>
+                        <p className="text-xs text-slate-500">Days on market</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {r.landValue && (
+                  <div className="flex items-center justify-between bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3">
+                    <p className="text-xs font-semibold text-slate-600">Land Value</p>
+                    <p className="text-sm font-bold text-[#0a192f]">{showValues ? formatCurrency(r.landValue) : "••••••••"}</p>
+                  </div>
+                )}
+                {r.zoning && (
+                  <div className="flex items-center justify-between bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3">
+                    <p className="text-xs font-semibold text-slate-600">Zoning</p>
+                    <p className="text-sm font-bold text-[#0a192f]">{r.zoning}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Comparable Sales */}
-            <div className="bg-[#0d2444]/80 border border-slate-800 rounded-xl p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <BarChart3 className="h-4 w-4 text-[#c5a059]" />
-                <h3 className="font-semibold text-white text-sm">Comparable Sales</h3>
-              </div>
-              <div className="space-y-2">
-                {r.comparableSales.map((sale, idx) => (
-                  <div key={idx} className="flex items-center justify-between bg-slate-800/40 rounded-lg px-4 py-3">
-                    <div>
-                      <p className="text-sm font-medium text-white">{sale.address}</p>
-                      <div className="flex items-center gap-3 text-xs text-slate-400 mt-0.5">
-                        <span>{sale.suburb}</span>
-                        {sale.bedrooms && <span>{sale.bedrooms}bd</span>}
-                        {sale.bathrooms && <span>{sale.bathrooms}ba</span>}
-                        {sale.distanceKm && <span>{sale.distanceKm}km away</span>}
+            <Card className="border border-slate-200 shadow-xs">
+              <CardContent className="p-5 space-y-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <BarChart3 className="h-4 w-4 text-[#c5a059]" />
+                  <h3 className="font-serif font-bold text-[#0a192f] text-sm">Comparable Sales</h3>
+                </div>
+                <div className="space-y-2">
+                  {r.comparableSales.map((sale, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3">
+                      <div>
+                        <p className="text-xs font-bold text-[#0a192f]">{sale.address}</p>
+                        <div className="flex items-center gap-3 text-[11px] text-slate-500 mt-0.5">
+                          <span>{sale.suburb}</span>
+                          {sale.bedrooms && <span>{sale.bedrooms}bd</span>}
+                          {sale.bathrooms && <span>{sale.bathrooms}ba</span>}
+                          {sale.distanceKm && <span>{sale.distanceKm}km away</span>}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs font-bold text-[#0a192f]">{showValues ? formatCurrency(sale.salePrice) : "••••••••"}</p>
+                        <p className="text-[10px] text-slate-500">{sale.saleDate}</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-[#c5a059]">{showValues ? formatCurrency(sale.salePrice) : "••••••••"}</p>
-                      <p className="text-[11px] text-slate-500">{sale.saleDate}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Report Footer */}
-            <div className="flex items-center justify-between text-xs text-slate-500">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-medium px-1">
               <div className="flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5" />
                 Data fetched: {new Date(r.fetchedAt).toLocaleString("en-AU")}
               </div>
               <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                 Source: CoreLogic / RP Data
               </div>
             </div>
           </div>
         ) : (
-          <div className="lg:col-span-2 flex items-center justify-center bg-[#0d2444]/40 border border-slate-800 rounded-xl min-h-64">
-            <div className="text-center text-slate-500">
-              <TrendingUp className="h-10 w-10 mx-auto mb-3 opacity-30" />
-              <p>Select a property to view intelligence report</p>
+          <div className="lg:col-span-2 flex items-center justify-center bg-white border border-slate-200 rounded-2xl min-h-64 shadow-xs">
+            <div className="text-center text-slate-400">
+              <TrendingUp className="h-10 w-10 mx-auto mb-3 opacity-40 text-slate-400" />
+              <p className="font-semibold text-slate-600">Select a property to view intelligence report</p>
             </div>
           </div>
         )}

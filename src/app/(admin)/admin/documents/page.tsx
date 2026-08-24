@@ -113,15 +113,15 @@ export default function DocumentsPage() {
             <button
               key={status}
               onClick={() => setStatusFilter(statusFilter === status ? "ALL" : status)}
-              className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border text-center transition-all ${
+              className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border text-center transition-all ${
                 statusFilter === status
-                  ? `${cfg.bg} ${cfg.border} border`
-                  : "bg-[#0d2444]/60 border-slate-800 hover:border-slate-700"
+                  ? `${cfg.bg} ${cfg.border} border-2 shadow-xs`
+                  : "bg-white border-slate-200 text-slate-700 hover:border-slate-300 shadow-xs"
               }`}
             >
               <Icon className={`h-4 w-4 ${cfg.color}`} />
-              <span className="text-lg font-bold text-white">{byStatus(status)}</span>
-              <span className={`text-[10px] font-medium ${cfg.color}`}>{cfg.label}</span>
+              <span className="font-serif text-xl font-bold text-[#0a192f]">{byStatus(status)}</span>
+              <span className={`text-[10px] font-bold ${cfg.color}`}>{cfg.label}</span>
             </button>
           );
         })}
@@ -129,13 +129,13 @@ export default function DocumentsPage() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
         <input
           type="text"
           placeholder="Search by document title, signer name, or property address..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-[#0d2444]/80 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-[#c5a059]/50"
+          className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0a192f]"
         />
       </div>
 
@@ -150,34 +150,34 @@ export default function DocumentsPage() {
           return (
             <div
               key={doc.id}
-              className="bg-[#0d2444]/80 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-all"
+              className="bg-white border border-slate-200 rounded-2xl p-5 hover:border-[#c5a059] transition-all shadow-xs"
             >
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 {/* Doc Info */}
                 <div className="flex items-start gap-4 flex-1 min-w-0">
-                  <div className="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
-                    <DocTypeIcon className="h-5 w-5 text-slate-400" />
+                  <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 shadow-2xs">
+                    <DocTypeIcon className="h-5 w-5 text-slate-600" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-semibold text-white text-sm truncate">{doc.title}</h3>
+                      <h3 className="font-serif font-bold text-[#0a192f] text-sm truncate">{doc.title}</h3>
                       <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${statusCfg.bg} ${statusCfg.border} ${statusCfg.color}`}
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusCfg.bg} ${statusCfg.border} ${statusCfg.color}`}
                       >
-                        <StatusIcon className="h-2.5 w-2.5" />
+                        <StatusIcon className="h-3 w-3" />
                         {statusCfg.label}
                       </span>
                     </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1.5 text-xs text-slate-400">
-                      <span>{docTypeCfg.label}</span>
-                      <span>Signer: <span className="text-white">{doc.signerName}</span></span>
-                      {doc.propertyAddress && <span className="truncate max-w-xs">{doc.propertyAddress}</span>}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1.5 text-xs text-slate-600 font-medium">
+                      <span className="font-bold text-[#0a192f]">{docTypeCfg.label}</span>
+                      <span>Signer: <span className="font-bold text-slate-900">{doc.signerName}</span></span>
+                      {doc.propertyAddress && <span className="truncate max-w-xs text-slate-500">{doc.propertyAddress}</span>}
                     </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-[11px] text-slate-500">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-[11px] text-slate-500 font-mono">
                       {doc.sentAt && <span>Sent: {doc.sentAt}</span>}
                       {doc.signedAt && <span>Signed: {doc.signedAt}</span>}
                       {doc.completedAt && <span>Completed: {doc.completedAt}</span>}
-                      {doc.expiresAt && <span className="text-amber-500">Expires: {doc.expiresAt}</span>}
+                      {doc.expiresAt && <span className="text-amber-600 font-bold">Expires: {doc.expiresAt}</span>}
                       {doc.agentName && <span>Agent: {doc.agentName}</span>}
                     </div>
                   </div>
@@ -190,14 +190,14 @@ export default function DocumentsPage() {
                       href={`https://app.flkitover.com/documents/${doc.flkId}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-lg text-xs font-medium hover:bg-indigo-500/20 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-xl text-xs font-bold hover:bg-indigo-100 transition-colors shadow-2xs"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
                       View in FLK
                     </a>
                   )}
                   {doc.status === "DRAFT" && (
-                    <button className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-lg text-xs font-medium hover:bg-blue-500/20 transition-colors">
+                    <button className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl text-xs font-bold hover:bg-blue-100 transition-colors shadow-2xs">
                       <Send className="h-3.5 w-3.5" />
                       Send
                     </button>
