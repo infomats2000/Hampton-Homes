@@ -1,4 +1,4 @@
-// Hampton Homes - Role Based Access Control (RBAC) & Permission Engine
+// Infomats Real Estate Platform - Role Based Access Control (RBAC) & Permission Engine
 
 export const PERMISSIONS = {
   // Property Permissions

@@ -63,4 +63,4 @@ export class Logger {
   }
 }
 
-export const logger = new Logger("hampton-homes");
+export const logger = new Logger("infomats-real-estate");

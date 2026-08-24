@@ -1,4 +1,4 @@
-// Property CRM Integration Interface for Hampton Homes
+// Property CRM Integration Interface for Infomats Real Estate Platform
 export interface MRISyncResult {
   success: boolean;
   jobId: string;

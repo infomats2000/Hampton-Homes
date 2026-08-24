@@ -3,7 +3,7 @@ import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
 import { MOCK_AGENTS, MOCK_OFFICES } from "@/lib/properties/service";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.APP_URL || "https://hamptonhomes.com.au";
+  const baseUrl = process.env.APP_URL || "https://infomats.com.au";
 
   const staticPages: MetadataRoute.Sitemap = [
     "",

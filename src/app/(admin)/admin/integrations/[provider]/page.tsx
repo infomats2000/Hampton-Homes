@@ -421,10 +421,10 @@ export default function ProviderDetailPage() {
               </p>
               <div className="flex items-center gap-3 bg-slate-900 rounded-lg px-4 py-3">
                 <code className="text-sm text-[#c5a059] font-mono flex-1">
-                  https://hampton-homes.vercel.app{config.webhookPath}
+                  https://infomats.vercel.app{config.webhookPath}
                 </code>
                 <button
-                  onClick={() => navigator.clipboard.writeText(`https://hampton-homes.vercel.app${config.webhookPath}`)}
+                  onClick={() => navigator.clipboard.writeText(`https://infomats.vercel.app${config.webhookPath}`)}
                   className="text-xs text-slate-400 hover:text-white transition-colors px-2 py-1 bg-slate-800 rounded"
                 >
                   Copy

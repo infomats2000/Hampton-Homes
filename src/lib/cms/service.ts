@@ -15,7 +15,7 @@ export const MOCK_ARTICLES: ArticleItem[] = [
     title: "Sydney Real Estate Market Insights Q3 2026",
     slug: "sydney-market-insights-q3-2026",
     category: "Market Reports",
-    author: "Sarah Hampton",
+    author: "Sarah Vance",
     publishedAt: "2026-08-20",
     status: "PUBLISHED",
     excerpt: "Analysis of Australian interest rate impacts, Sydney waterfront property demand, and Parramatta commercial growth.",
