@@ -58,12 +58,22 @@ export const AGENCY_FACEBOOK_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_I
 
 // ─── Feature Flags ────────────────────────────────────────────────────────────
 
-// Toggle entire features on/off per client. Set to "false" to hide from nav/UI.
+// ─── Subscription Tier & Super Admin Controls ────────────────────────────────
+export const SUBSCRIPTION_TIER = process.env.NEXT_PUBLIC_SUBSCRIPTION_TIER ?? "GOLD_ENTERPRISE"; // "GOLD_ENTERPRISE" | "SILVER_GROWTH" | "BRONZE_STARTER" | "CUSTOM"
+
+// ─── 12 Granular Subscription Feature Toggles ────────────────────────────────
 export const FEATURE_CUSTOMER_PORTAL = process.env.NEXT_PUBLIC_FEATURE_CUSTOMER_PORTAL !== "false";
 export const FEATURE_COMMERCIAL_LISTINGS = process.env.NEXT_PUBLIC_FEATURE_COMMERCIAL !== "false";
 export const FEATURE_PROJECTS = process.env.NEXT_PUBLIC_FEATURE_PROJECTS !== "false";
 export const FEATURE_AUCTIONS = process.env.NEXT_PUBLIC_FEATURE_AUCTIONS !== "false";
 export const FEATURE_PROPERTY_MANAGEMENT = process.env.NEXT_PUBLIC_FEATURE_PROPERTY_MANAGEMENT !== "false";
+export const FEATURE_TRUST_ACCOUNTING = process.env.NEXT_PUBLIC_FEATURE_TRUST_ACCOUNTING !== "false";
+export const FEATURE_COMMISSION_CALCULATOR = process.env.NEXT_PUBLIC_FEATURE_COMMISSION_CALCULATOR !== "false";
+export const FEATURE_AI_COPYWRITER = process.env.NEXT_PUBLIC_FEATURE_AI_COPYWRITER !== "false";
+export const FEATURE_BUYER_MATCHING = process.env.NEXT_PUBLIC_FEATURE_BUYER_MATCHING !== "false";
+export const FEATURE_PORTAL_SYNDICATION = process.env.NEXT_PUBLIC_FEATURE_PORTAL_SYNDICATION !== "false";
+export const FEATURE_XERO_SYNC = process.env.NEXT_PUBLIC_FEATURE_XERO_SYNC !== "false";
+export const FEATURE_AML_VERIFICATION = process.env.NEXT_PUBLIC_FEATURE_AML_VERIFICATION !== "false";
 export const FEATURE_NEWS = process.env.NEXT_PUBLIC_FEATURE_NEWS !== "false";
 export const FEATURE_SUBURB_GUIDES = process.env.NEXT_PUBLIC_FEATURE_SUBURB_GUIDES !== "false";
 export const FEATURE_PROPERTY_INTELLIGENCE = process.env.NEXT_PUBLIC_FEATURE_PROPERTY_INTELLIGENCE !== "false";
@@ -71,10 +81,6 @@ export const FEATURE_DIGITAL_DOCUMENTS = process.env.NEXT_PUBLIC_FEATURE_DOCUMEN
 
 // ─── Convenience Helpers ─────────────────────────────────────────────────────
 
-/**
- * Returns the full agency config as a single object.
- * Useful for passing the entire config as props to a single component.
- */
 export function getAgencyConfig() {
   return {
     // Identity
@@ -84,6 +90,7 @@ export function getAgencyConfig() {
     abn: AGENCY_ABN,
     licence: AGENCY_LICENCE,
     state: AGENCY_STATE,
+    subscriptionTier: SUBSCRIPTION_TIER,
     // Contact
     phone: AGENCY_PHONE,
     phoneDisplay: AGENCY_PHONE_DISPLAY,
@@ -108,6 +115,13 @@ export function getAgencyConfig() {
       projects: FEATURE_PROJECTS,
       auctions: FEATURE_AUCTIONS,
       propertyManagement: FEATURE_PROPERTY_MANAGEMENT,
+      trustAccounting: FEATURE_TRUST_ACCOUNTING,
+      commissionCalculator: FEATURE_COMMISSION_CALCULATOR,
+      aiCopywriter: FEATURE_AI_COPYWRITER,
+      buyerMatching: FEATURE_BUYER_MATCHING,
+      portalSyndication: FEATURE_PORTAL_SYNDICATION,
+      xeroSync: FEATURE_XERO_SYNC,
+      amlVerification: FEATURE_AML_VERIFICATION,
       news: FEATURE_NEWS,
       suburbGuides: FEATURE_SUBURB_GUIDES,
       propertyIntelligence: FEATURE_PROPERTY_INTELLIGENCE,

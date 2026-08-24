@@ -35,34 +35,58 @@ import {
   KeyRound,
   Sparkles,
 } from "lucide-react";
-import { AGENCY_NAME, AGENCY_LOGO_URL } from "@/lib/agency-config";
+import {
+  AGENCY_NAME,
+  AGENCY_LOGO_URL,
+  FEATURE_PROPERTY_MANAGEMENT,
+  FEATURE_TRUST_ACCOUNTING,
+  FEATURE_AML_VERIFICATION,
+  FEATURE_XERO_SYNC,
+  FEATURE_PORTAL_SYNDICATION,
+  FEATURE_AI_COPYWRITER,
+  FEATURE_PROPERTY_INTELLIGENCE,
+  FEATURE_DIGITAL_DOCUMENTS,
+  FEATURE_NEWS,
+  FEATURE_SUBURB_GUIDES,
+} from "@/lib/agency-config";
 
-const ADMIN_MENU_GROUPS = [
+interface MenuItem {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+}
+
+const ADMIN_MENU_GROUPS: Array<{ title: string; items: MenuItem[] }> = [
   {
     title: "Core Operations",
-    items: [
-      { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-      { label: "Properties", href: "/admin/properties", icon: Building2 },
-      { label: "MRI Integration", href: "/admin/mri", icon: RefreshCw, badge: "Live" },
-      { label: "AI Marketing & Tasks", href: "/admin/marketing-tasks", icon: Sparkles, badge: "AI" },
-      { label: "Property Management", href: "/admin/property-management", icon: KeyRound, badge: "Rentals" },
-      { label: "Trust & Commission", href: "/admin/financial", icon: DollarSign, badge: "ERP" },
-      { label: "AML & eIDV Verification", href: "/admin/aml-verification", icon: ShieldCheck, badge: "AUSTRAC" },
-      { label: "Leads & Pipeline", href: "/admin/leads", icon: Users },
-      { label: "Appraisal Requests", href: "/admin/appraisals", icon: Briefcase },
-      { label: "Inspections", href: "/admin/inspections", icon: Calendar },
-    ],
+    items: (
+      [
+        { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+        { label: "Properties", href: "/admin/properties", icon: Building2 },
+        { label: "MRI Integration", href: "/admin/mri", icon: RefreshCw, badge: "Live" },
+        FEATURE_AI_COPYWRITER ? { label: "AI Marketing & Tasks", href: "/admin/marketing-tasks", icon: Sparkles, badge: "AI" } : null,
+        FEATURE_PROPERTY_MANAGEMENT ? { label: "Property Management", href: "/admin/property-management", icon: KeyRound, badge: "Rentals" } : null,
+        FEATURE_TRUST_ACCOUNTING ? { label: "Trust & Commission", href: "/admin/financial", icon: DollarSign, badge: "ERP" } : null,
+        FEATURE_AML_VERIFICATION ? { label: "AML & eIDV Verification", href: "/admin/aml-verification", icon: ShieldCheck, badge: "AUSTRAC" } : null,
+        { label: "Leads & Pipeline", href: "/admin/leads", icon: Users },
+        { label: "Appraisal Requests", href: "/admin/appraisals", icon: Briefcase },
+        { label: "Inspections", href: "/admin/inspections", icon: Calendar },
+      ] as Array<MenuItem | null>
+    ).filter((item): item is MenuItem => item !== null),
   },
   {
     title: "Integration Hub",
-    items: [
-      { label: "All Integrations", href: "/admin/integrations", icon: Network, badge: "Hub" },
-      { label: "Xero Accounting", href: "/admin/integrations/xero", icon: DollarSign, badge: "Sync" },
-      { label: "Portal Feeds", href: "/admin/syndication", icon: Radio, badge: "REA" },
-      { label: "Unified Contacts", href: "/admin/contacts", icon: BookUser },
-      { label: "Digital Documents", href: "/admin/documents", icon: FileSignature },
-      { label: "Property Intelligence", href: "/admin/property-intelligence", icon: TrendingUp, badge: "RP Data" },
-    ],
+    items: (
+      [
+        { label: "All Integrations", href: "/admin/integrations", icon: Network, badge: "Hub" },
+        FEATURE_XERO_SYNC ? { label: "Xero Accounting", href: "/admin/integrations/xero", icon: DollarSign, badge: "Sync" } : null,
+        FEATURE_PORTAL_SYNDICATION ? { label: "Portal Feeds", href: "/admin/syndication", icon: Radio, badge: "REA" } : null,
+        { label: "Unified Contacts", href: "/admin/contacts", icon: BookUser },
+        FEATURE_DIGITAL_DOCUMENTS ? { label: "Digital Documents", href: "/admin/documents", icon: FileSignature } : null,
+        FEATURE_PROPERTY_INTELLIGENCE ? { label: "Property Intelligence", href: "/admin/property-intelligence", icon: TrendingUp, badge: "RP Data" } : null,
+      ] as Array<MenuItem | null>
+    ).filter((item): item is MenuItem => item !== null),
   },
   {
     title: "Agency & People",
@@ -74,13 +98,15 @@ const ADMIN_MENU_GROUPS = [
   },
   {
     title: "CMS & Marketing",
-    items: [
-      { label: "Pages & Builder", href: "/admin/cms", icon: FileText },
-      { label: "News & Insights", href: "/admin/news", icon: Newspaper },
-      { label: "Suburb Guides", href: "/admin/suburbs", icon: MapPin },
-      { label: "Media Library", href: "/admin/media", icon: Image },
-      { label: "SEO Engine", href: "/admin/seo", icon: Search },
-    ],
+    items: (
+      [
+        { label: "Pages & Builder", href: "/admin/cms", icon: FileText },
+        FEATURE_NEWS ? { label: "News & Insights", href: "/admin/news", icon: Newspaper } : null,
+        FEATURE_SUBURB_GUIDES ? { label: "Suburb Guides", href: "/admin/suburbs", icon: MapPin } : null,
+        { label: "Media Library", href: "/admin/media", icon: Image },
+        { label: "SEO Engine", href: "/admin/seo", icon: Search },
+      ] as Array<MenuItem | null>
+    ).filter((item): item is MenuItem => item !== null),
   },
   {
     title: "Intelligence & Security",

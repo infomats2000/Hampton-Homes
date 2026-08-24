@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Search, Bell, Shield, User, ExternalLink, RefreshCw, Menu } from "lucide-react";
 import { Button } from "../ui/button";
-import { AGENCY_NAME } from "@/lib/agency-config";
+import { AGENCY_NAME, SUBSCRIPTION_TIER } from "@/lib/agency-config";
 
 interface AdminHeaderProps {
   onMenuToggle?: () => void;
@@ -37,6 +37,16 @@ export function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
 
       {/* Right Action Icons & User Info */}
       <div className="flex items-center gap-2 sm:gap-4">
+        {/* Super Admin Subscription Badge */}
+        <Link
+          href="/super-admin"
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-300 text-xs font-bold hover:bg-amber-100 transition-colors shadow-2xs"
+          title="Super Admin Licensing & Feature Controls"
+        >
+          <Shield className="h-3.5 w-3.5 text-amber-600" />
+          <span>{SUBSCRIPTION_TIER.replace("_", " ")}</span>
+        </Link>
+
         {/* Live Sync Status Pill */}
         <Link
           href="/admin/mri"
