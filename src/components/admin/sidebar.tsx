@@ -57,6 +57,7 @@ const ADMIN_MENU_GROUPS = [
     title: "Integration Hub",
     items: [
       { label: "All Integrations", href: "/admin/integrations", icon: Network, badge: "Hub" },
+      { label: "Xero Accounting", href: "/admin/integrations/xero", icon: DollarSign, badge: "Sync" },
       { label: "Portal Feeds", href: "/admin/syndication", icon: Radio, badge: "REA" },
       { label: "Unified Contacts", href: "/admin/contacts", icon: BookUser },
       { label: "Digital Documents", href: "/admin/documents", icon: FileSignature },

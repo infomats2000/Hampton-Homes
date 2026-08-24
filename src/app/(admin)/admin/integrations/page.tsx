@@ -34,6 +34,17 @@ interface ProviderCard {
 
 const PROVIDERS: ProviderCard[] = [
   {
+    key: "XERO",
+    displayName: "Xero Accounting",
+    description: "Automated 2-way sync for 10% GST, trust receipts, commissions & bills",
+    category: "ERP / Accounting",
+    status: "CONNECTED",
+    lastSync: "12 minutes ago",
+    recordsSynced: 442,
+    color: "#13b5ea",
+    docsUrl: "/admin/integrations/xero",
+  },
+  {
     key: "MRI_VAULT",
     displayName: "MRI Vault",
     description: "Sales listings & property data sync",
