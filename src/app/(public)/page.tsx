@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
 import { AGENCY_NAME, AGENCY_TAGLINE } from "@/lib/agency-config";
 import { SafeImage } from "@/components/ui/safe-image";
+import { PublicTestimonialsSection } from "@/components/public/testimonials-section";
 
 export default function HomePage() {
   const featuredProperties = MOCK_AUSTRALIAN_PROPERTIES.slice(0, 3);
@@ -212,6 +213,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials & Client Reviews Section */}
+      <PublicTestimonialsSection />
     </div>
   );
 }

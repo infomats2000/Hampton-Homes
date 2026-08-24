@@ -34,6 +34,7 @@ import {
   DollarSign,
   KeyRound,
   Sparkles,
+  Quote,
 } from "lucide-react";
 import {
   AGENCY_NAME,
@@ -101,6 +102,7 @@ const ADMIN_MENU_GROUPS: Array<{ title: string; items: MenuItem[] }> = [
     items: (
       [
         { label: "Pages & Builder", href: "/admin/cms", icon: FileText },
+        { label: "Client Reviews", href: "/admin/cms/testimonials", icon: Quote, badge: "5★" },
         FEATURE_NEWS ? { label: "News & Insights", href: "/admin/news", icon: Newspaper } : null,
         FEATURE_SUBURB_GUIDES ? { label: "Suburb Guides", href: "/admin/suburbs", icon: MapPin } : null,
         { label: "Media Library", href: "/admin/media", icon: Image },
