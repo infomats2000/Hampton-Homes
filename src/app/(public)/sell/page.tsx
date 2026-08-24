@@ -5,6 +5,7 @@ import { CheckCircle2, ShieldCheck, PhoneCall, Building2, Sparkles, Send } from 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { AGENCY_NAME } from "@/lib/agency-config";
 
 export default function SellPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -33,7 +34,7 @@ export default function SellPage() {
             <CheckCircle2 className="h-16 w-16 text-emerald-600 mx-auto" />
             <h2 className="font-serif text-3xl font-bold text-slate-900">Appraisal Request Submitted!</h2>
             <p className="text-slate-700 text-sm max-w-md mx-auto">
-              Thank you for contacting Hampton Homes. A licensed sales executive from your local branch will review your property data and reach out within 2 hours.
+              Thank you for contacting {AGENCY_NAME}. A licensed sales executive from your local branch will review your property data and reach out within 2 hours.
             </p>
           </Card>
         ) : (
@@ -47,8 +48,9 @@ export default function SellPage() {
                   </h3>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold uppercase text-slate-500">Property Address *</label>
+                    <label htmlFor="sell-address" className="text-xs font-semibold uppercase text-slate-500">Property Address *</label>
                     <input
+                      id="sell-address"
                       type="text"
                       required
                       placeholder="e.g. 142 Church Street, Parramatta NSW 2150"
@@ -58,8 +60,8 @@ export default function SellPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold uppercase text-slate-500">Property Type</label>
-                      <select className="w-full py-3 px-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none">
+                      <label htmlFor="sell-type" className="text-xs font-semibold uppercase text-slate-500">Property Type</label>
+                      <select id="sell-type" className="w-full py-3 px-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none">
                         <option value="House">House</option>
                         <option value="Apartment">Apartment</option>
                         <option value="Townhouse">Townhouse</option>
@@ -68,8 +70,8 @@ export default function SellPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold uppercase text-slate-500">Bedrooms</label>
-                      <select className="w-full py-3 px-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none">
+                      <label htmlFor="sell-beds" className="text-xs font-semibold uppercase text-slate-500">Bedrooms</label>
+                      <select id="sell-beds" className="w-full py-3 px-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none">
                         <option value="1">1 Bedroom</option>
                         <option value="2">2 Bedrooms</option>
                         <option value="3">3 Bedrooms</option>
@@ -79,8 +81,8 @@ export default function SellPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold uppercase text-slate-500">Bathrooms</label>
-                      <select className="w-full py-3 px-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none">
+                      <label htmlFor="sell-baths" className="text-xs font-semibold uppercase text-slate-500">Bathrooms</label>
+                      <select id="sell-baths" className="w-full py-3 px-3 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none">
                         <option value="1">1 Bathroom</option>
                         <option value="2">2 Bathrooms</option>
                         <option value="3">3+ Bathrooms</option>
@@ -92,13 +94,14 @@ export default function SellPage() {
                 {/* Section 2: Contact Details & Intent */}
                 <div className="space-y-4 pt-4 border-t border-slate-100">
                   <h3 className="font-serif font-bold text-lg text-[#0a192f] border-b border-slate-100 pb-2">
-                    2. Owner Contact & Timeframe
+                    2. Owner Contact &amp; Timeframe
                   </h3>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold uppercase text-slate-500">Full Name *</label>
+                      <label htmlFor="sell-name" className="text-xs font-semibold uppercase text-slate-500">Full Name *</label>
                       <input
+                        id="sell-name"
                         type="text"
                         required
                         placeholder="Your Full Name"
@@ -107,8 +110,9 @@ export default function SellPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold uppercase text-slate-500">Mobile Phone *</label>
+                      <label htmlFor="sell-phone" className="text-xs font-semibold uppercase text-slate-500">Mobile Phone *</label>
                       <input
+                        id="sell-phone"
                         type="tel"
                         required
                         placeholder="0400 000 000"
@@ -118,8 +122,9 @@ export default function SellPage() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold uppercase text-slate-500">Email Address *</label>
+                    <label htmlFor="sell-email" className="text-xs font-semibold uppercase text-slate-500">Email Address *</label>
                     <input
+                      id="sell-email"
                       type="email"
                       required
                       placeholder="your.email@example.com.au"

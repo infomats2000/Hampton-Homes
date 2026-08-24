@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { generateVCard, createVCardResponse } from "@/lib/integrations/apple/vcard";
+import { AGENCY_NAME, AGENCY_EMAIL } from "@/lib/agency-config";
 
 export async function GET(
   request: NextRequest,
@@ -27,16 +28,16 @@ export async function GET(
         email: "john.smith@example.com.au",
         phone: "+61 2 9000 0000",
         mobile: "+61 400 000 000",
-        company: "Hampton Homes Enquiry",
-        note: `Lead from Hampton Homes portal. Type: ${type}. ID: ${id}`,
+        company: `${AGENCY_NAME} Enquiry`,
+        note: `Lead from ${AGENCY_NAME} portal. Type: ${type}. ID: ${id}`,
       },
       agent: {
         firstName: "Sarah",
         lastName: "Johnson",
-        email: "sarah.johnson@hamptonhomes.com.au",
+        email: AGENCY_EMAIL,
         phone: "+61 2 9000 0001",
         mobile: "+61 411 000 001",
-        company: "Hampton Homes Realtors",
+        company: `${AGENCY_NAME}`,
         title: "Senior Sales Agent",
       },
       customer: {
@@ -44,7 +45,7 @@ export async function GET(
         lastName: "Account",
         email: "customer@example.com.au",
         phone: "+61 2 9000 0002",
-        company: "Hampton Homes Customer",
+        company: `${AGENCY_NAME} Customer`,
       },
     };
 

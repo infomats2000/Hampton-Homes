@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createICalResponse } from "@/lib/integrations/apple/ical";
+import { AGENCY_NAME, AGENCY_EMAIL, AGENCY_PHONE } from "@/lib/agency-config";
 
 export async function GET(
   request: NextRequest,
@@ -23,16 +24,17 @@ export async function GET(
     startTime.setHours(10, 0, 0, 0);
     const endTime = new Date(startTime.getTime() + 30 * 60 * 1000); // 30 min
 
+    const emailDomain = AGENCY_EMAIL.split("@")[1] ?? "agency.com.au";
     const demoEvent = {
-      uid: `appointment-${id}@hamptonhomes.com.au`,
-      title: "Property Inspection — Hampton Homes",
-      description: `Property Inspection\n\nAppointment ID: ${id}\n\nPlease arrive 5 minutes early.\n\nHampton Homes Realtors\nPhone: +61 2 9000 0000\nEmail: info@hamptonhomes.com.au`,
+      uid: `appointment-${id}@${emailDomain}`,
+      title: `Property Inspection — ${AGENCY_NAME}`,
+      description: `Property Inspection\n\nAppointment ID: ${id}\n\nPlease arrive 5 minutes early.\n\n${AGENCY_NAME}\nPhone: ${AGENCY_PHONE}\nEmail: ${AGENCY_EMAIL}`,
       location: "123 Harbour View Drive, Mosman NSW 2088",
       startTime,
       endTime,
       organizer: {
-        name: "Hampton Homes Realtors",
-        email: "info@hamptonhomes.com.au",
+        name: `${AGENCY_NAME} Realtors`,
+        email: AGENCY_EMAIL,
       },
       alarm: 60, // 60 minutes before
     };

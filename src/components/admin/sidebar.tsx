@@ -29,7 +29,13 @@ import {
   FileSignature,
   TrendingUp,
   BookUser,
+  Palette,
+  Radio,
+  DollarSign,
+  KeyRound,
+  Sparkles,
 } from "lucide-react";
+import { AGENCY_NAME, AGENCY_LOGO_URL } from "@/lib/agency-config";
 
 const ADMIN_MENU_GROUPS = [
   {
@@ -38,6 +44,10 @@ const ADMIN_MENU_GROUPS = [
       { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
       { label: "Properties", href: "/admin/properties", icon: Building2 },
       { label: "MRI Integration", href: "/admin/mri", icon: RefreshCw, badge: "Live" },
+      { label: "AI Marketing & Tasks", href: "/admin/marketing-tasks", icon: Sparkles, badge: "AI" },
+      { label: "Property Management", href: "/admin/property-management", icon: KeyRound, badge: "Rentals" },
+      { label: "Trust & Commission", href: "/admin/financial", icon: DollarSign, badge: "ERP" },
+      { label: "AML & eIDV Verification", href: "/admin/aml-verification", icon: ShieldCheck, badge: "AUSTRAC" },
       { label: "Leads & Pipeline", href: "/admin/leads", icon: Users },
       { label: "Appraisal Requests", href: "/admin/appraisals", icon: Briefcase },
       { label: "Inspections", href: "/admin/inspections", icon: Calendar },
@@ -47,6 +57,7 @@ const ADMIN_MENU_GROUPS = [
     title: "Integration Hub",
     items: [
       { label: "All Integrations", href: "/admin/integrations", icon: Network, badge: "Hub" },
+      { label: "Portal Feeds", href: "/admin/syndication", icon: Radio, badge: "REA" },
       { label: "Unified Contacts", href: "/admin/contacts", icon: BookUser },
       { label: "Digital Documents", href: "/admin/documents", icon: FileSignature },
       { label: "Property Intelligence", href: "/admin/property-intelligence", icon: TrendingUp, badge: "RP Data" },
@@ -79,8 +90,9 @@ const ADMIN_MENU_GROUPS = [
       { label: "User Management", href: "/admin/users", icon: Users },
       { label: "Roles & Permissions", href: "/admin/roles", icon: ShieldCheck },
       { label: "Audit Log", href: "/admin/audit", icon: History },
-      { label: "Settings", href: "/admin/settings", icon: Settings },
-      { label: "System Health", href: "/admin/system", icon: Activity },
+      { label: "Agency Branding", href: "/admin/settings", icon: Palette, badge: "Config" },
+      { label: "System Settings", href: "/admin/system", icon: Settings },
+      { label: "System Health", href: "/admin/system-health", icon: Activity },
     ],
   },
 ];
@@ -100,10 +112,10 @@ export function AdminSidebar({ mobileOpen = false, onClose }: AdminSidebarProps)
       <div className="h-16 px-6 flex items-center border-b border-slate-800 justify-between">
         <Link href="/admin/dashboard" onClick={onClose} className="flex items-center gap-3">
           <img
-            src="/logo.jpg"
-            alt="Hampton Homes Realtors"
-            className="h-10 w-auto object-contain rounded-md shadow-sm"
-          />
+              src={AGENCY_LOGO_URL}
+              alt={`${AGENCY_NAME} Admin Portal`}
+              className="h-10 w-auto object-contain rounded-md shadow-sm"
+            />
           <span className="text-[10px] uppercase tracking-widest text-[#c5a059] font-bold border border-[#c5a059]/30 px-2 py-0.5 rounded-full bg-[#c5a059]/10">
             Admin
           </span>

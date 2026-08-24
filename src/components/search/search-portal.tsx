@@ -19,12 +19,15 @@ import {
   Building2,
   CheckCircle2,
   ShieldCheck,
+  SearchX,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
 import { MRIRawProperty } from "@/lib/mri/provider.interface";
+import { SafeImage } from "@/components/ui/safe-image";
 
 export interface SearchPortalProps {
   defaultListingType?: "RESIDENTIAL_SALE" | "RESIDENTIAL_RENT" | "COMMERCIAL_SALE" | "PROJECT";
@@ -239,81 +242,104 @@ export function SearchPortal({ defaultListingType = "RESIDENTIAL_SALE", title, s
           <span className="text-[#0a192f] font-mono">100% MRI Synchronized</span>
         </div>
 
-        {/* Dynamic View Modes Rendering */}
-        {viewMode === "grid" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {filteredProperties.map((item) => (
-              <PropertyCard key={item.externalId} item={item} />
-            ))}
-          </div>
-        )}
-
-        {viewMode === "list" && (
-          <div className="space-y-4">
-            {filteredProperties.map((item) => (
-              <PropertyListRow key={item.externalId} item={item} />
-            ))}
-          </div>
-        )}
-
-        {(viewMode === "map" || viewMode === "split") && (
-          <div className={`grid grid-cols-1 ${viewMode === "split" ? "lg:grid-cols-2" : ""} gap-8`}>
-            {/* Interactive Map Visual Mock */}
-            <div className="relative min-h-[500px] rounded-2xl bg-slate-900 overflow-hidden shadow-xl border border-slate-800 flex flex-col items-center justify-center p-6 text-white text-center">
-              <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1200&q=80')` }} />
-              
-              {/* Map Pins Simulation */}
-              <div className="relative z-10 space-y-4 max-w-md">
-                <div className="flex items-center justify-center gap-2">
-                  <MapIcon className="h-8 w-8 text-[#c5a059]" />
-                  <h3 className="font-serif text-2xl font-bold">Interactive Australian Map View</h3>
-                </div>
-                <p className="text-xs text-slate-300">
-                  Select a property marker pin to preview pricing, agent details, and inspection schedules.
-                </p>
-
-                {/* Simulated Pins Buttons */}
-                <div className="flex flex-wrap gap-2 justify-center pt-2">
-                  {filteredProperties.map((item) => (
-                    <button
-                      key={item.externalId}
-                      onClick={() => setSelectedMapProperty(item)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-md ${
-                        selectedMapProperty?.externalId === item.externalId
-                          ? "bg-[#c5a059] text-slate-900 ring-2 ring-white scale-110"
-                          : "bg-[#0a192f] text-white hover:bg-slate-800"
-                      }`}
-                    >
-                      📍 {item.suburb} - {item.priceDisplay.split(" ")[0]}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Selected Marker Details Drawer */}
-                {selectedMapProperty && (
-                  <div className="bg-white text-slate-900 rounded-xl p-4 shadow-2xl text-left space-y-2 mt-4 border border-slate-200 animate-fadeIn">
-                    <Badge variant="sale">{selectedMapProperty.status}</Badge>
-                    <p className="font-serif text-lg font-bold text-[#0a192f]">{selectedMapProperty.priceDisplay}</p>
-                    <p className="text-xs text-slate-600 font-semibold">{selectedMapProperty.streetNumber} {selectedMapProperty.streetName}, {selectedMapProperty.suburb}</p>
-                    <Link href={`/property/${selectedMapProperty.externalId}`}>
-                      <Button variant="gold" size="sm" className="w-full mt-2 text-xs">
-                        View Full Property Listing →
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              </div>
+        {/* Empty State when 0 properties match */}
+        {filteredProperties.length === 0 ? (
+          <div className="bg-white rounded-2xl p-10 sm:p-14 border border-slate-200 text-center space-y-4 max-w-lg mx-auto shadow-xs my-6">
+            <div className="w-16 h-16 rounded-2xl bg-amber-50 text-[#c5a059] border border-amber-200 flex items-center justify-center mx-auto shadow-xs">
+              <SearchX className="h-8 w-8" />
             </div>
+            <div className="space-y-1.5">
+              <h3 className="font-serif text-2xl font-bold text-[#0a192f]">No properties match your search criteria</h3>
+              <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
+                We couldn&apos;t find any properties matching your current filter selection. Try expanding your price range, suburb, or bedroom criteria.
+              </p>
+            </div>
+            <div className="pt-3">
+              <Button variant="gold" size="lg" onClick={resetFilters} className="gap-2 text-xs font-bold px-6 shadow-sm">
+                <RefreshCw className="h-4 w-4" />
+                <span>Clear All Filters</span>
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Dynamic View Modes Rendering */}
+            {viewMode === "grid" && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {filteredProperties.map((item) => (
+                  <PropertyCard key={item.externalId} item={item} />
+                ))}
+              </div>
+            )}
 
-            {/* Split Mode List Column */}
-            {viewMode === "split" && (
-              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+            {viewMode === "list" && (
+              <div className="space-y-4">
                 {filteredProperties.map((item) => (
                   <PropertyListRow key={item.externalId} item={item} />
                 ))}
               </div>
             )}
-          </div>
+
+            {(viewMode === "map" || viewMode === "split") && (
+              <div className={`grid grid-cols-1 ${viewMode === "split" ? "lg:grid-cols-2" : ""} gap-8`}>
+                {/* Interactive Map Visual Mock */}
+                <div className="relative min-h-[500px] rounded-2xl bg-slate-900 overflow-hidden shadow-xl border border-slate-800 flex flex-col items-center justify-center p-6 text-white text-center">
+                  <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1200&q=80')` }} />
+                  
+                  {/* Map Pins Simulation */}
+                  <div className="relative z-10 space-y-4 max-w-md">
+                    <div className="flex items-center justify-center gap-2">
+                      <MapIcon className="h-8 w-8 text-[#c5a059]" />
+                      <h3 className="font-serif text-2xl font-bold">Interactive Australian Map View</h3>
+                    </div>
+                    <p className="text-xs text-slate-300">
+                      Select a property marker pin to preview pricing, agent details, and inspection schedules.
+                    </p>
+
+                    {/* Simulated Pins Buttons */}
+                    <div className="flex flex-wrap gap-2 justify-center pt-2">
+                      {filteredProperties.map((item) => (
+                        <button
+                          key={item.externalId}
+                          onClick={() => setSelectedMapProperty(item)}
+                          className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-md ${
+                            selectedMapProperty?.externalId === item.externalId
+                              ? "bg-[#c5a059] text-slate-900 ring-2 ring-white scale-110"
+                              : "bg-[#0a192f] text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          📍 {item.suburb} - {item.priceDisplay.split(" ")[0]}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Selected Marker Details Drawer */}
+                    {selectedMapProperty && (
+                      <div className="bg-white text-slate-900 rounded-xl p-4 shadow-2xl text-left space-y-2 mt-4 border border-slate-200 animate-fadeIn">
+                        <Badge variant="sale">{selectedMapProperty.status}</Badge>
+                        <p className="font-serif text-lg font-bold text-[#0a192f]">{selectedMapProperty.priceDisplay}</p>
+                        <p className="text-xs text-slate-600 font-semibold">{selectedMapProperty.streetNumber} {selectedMapProperty.streetName}, {selectedMapProperty.suburb}</p>
+                        <Link href={`/property/${selectedMapProperty.externalId}`}>
+                          <Button variant="gold" size="sm" className="w-full mt-2 text-xs">
+                            View Full Property Listing →
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Split Mode List Column */}
+                {viewMode === "split" && (
+                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                    {filteredProperties.map((item) => (
+                      <PropertyListRow key={item.externalId} item={item} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -325,9 +351,11 @@ function PropertyCard({ item }: { item: MRIRawProperty }) {
     <Link href={`/property/${item.externalId}`} className="block group">
       <Card className="overflow-hidden h-full hover:shadow-xl transition-all border border-slate-200">
         <div className="relative aspect-4/3 overflow-hidden bg-slate-100">
-          <img
+          <SafeImage
             src={item.photos[0]}
             alt={item.headline}
+            fallbackTitle={item.suburb}
+            fallbackSubtitle={item.priceDisplay}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute top-3 left-3 flex gap-2">

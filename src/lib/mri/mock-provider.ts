@@ -1,3 +1,4 @@
+import { AGENCY_NAME } from "../agency-config";
 import { PropertyCRMProvider, MRIRawProperty, MRISyncResult } from "./provider.interface";
 
 export const MOCK_AUSTRALIAN_PROPERTIES: MRIRawProperty[] = [
@@ -23,7 +24,7 @@ export const MOCK_AUSTRALIAN_PROPERTIES: MRIRawProperty[] = [
     priceNumeric: 1480000,
     primaryAgentName: "Marcus Vance",
     primaryAgentEmail: "marcus.vance@hamptonhomes.com.au",
-    officeName: "Hampton Homes Parramatta",
+    officeName: `${AGENCY_NAME} Parramatta`,
     photos: [
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
@@ -56,7 +57,7 @@ export const MOCK_AUSTRALIAN_PROPERTIES: MRIRawProperty[] = [
     priceNumeric: 2850000,
     primaryAgentName: "Elena Rostova",
     primaryAgentEmail: "elena.rostova@hamptonhomes.com.au",
-    officeName: "Hampton Homes Eastern Suburbs",
+    officeName: `${AGENCY_NAME} Eastern Suburbs`,
     photos: [
       "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80",
@@ -88,7 +89,7 @@ export const MOCK_AUSTRALIAN_PROPERTIES: MRIRawProperty[] = [
     priceNumeric: 2100,
     primaryAgentName: "Oliver Sterling",
     primaryAgentEmail: "oliver.sterling@hamptonhomes.com.au",
-    officeName: "Hampton Homes Manly",
+    officeName: `${AGENCY_NAME} Manly`,
     photos: [
       "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=80",
       "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?auto=format&fit=crop&w=1200&q=80",
@@ -120,7 +121,7 @@ export const MOCK_AUSTRALIAN_PROPERTIES: MRIRawProperty[] = [
     priceNumeric: 8500000,
     primaryAgentName: "Elena Rostova",
     primaryAgentEmail: "elena.rostova@hamptonhomes.com.au",
-    officeName: "Hampton Homes Mosman",
+    officeName: `${AGENCY_NAME} Mosman`,
     photos: [
       "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80",
     ],
@@ -147,7 +148,7 @@ export const MOCK_AUSTRALIAN_PROPERTIES: MRIRawProperty[] = [
     priceNumeric: 2420000,
     primaryAgentName: "Marcus Vance",
     primaryAgentEmail: "marcus.vance@hamptonhomes.com.au",
-    officeName: "Hampton Homes Parramatta",
+    officeName: `${AGENCY_NAME} Parramatta`,
     photos: [
       "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80",
     ],

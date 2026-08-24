@@ -1,6 +1,15 @@
 import React from "react";
 import Link from "next/link";
 import { Mail, Phone, MapPin, ExternalLink } from "lucide-react";
+import {
+  AGENCY_NAME,
+  AGENCY_LEGAL_NAME,
+  AGENCY_LOGO_URL,
+  AGENCY_PHONE,
+  AGENCY_EMAIL,
+  AGENCY_ABN,
+  AGENCY_HEAD_OFFICE_ADDRESS,
+} from "@/lib/agency-config";
 
 export function PublicFooter() {
   return (
@@ -11,26 +20,27 @@ export function PublicFooter() {
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
               <img
-                src="/logo.jpg"
-                alt="Hampton Homes Realtors"
+                src={AGENCY_LOGO_URL}
+                alt={`${AGENCY_NAME} Logo`}
                 className="h-12 w-auto object-contain rounded-md shadow-sm"
               />
             </div>
             <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
-              Australia&apos;s premier real estate agency platform. Powered by direct MRI Vault and Property Tree synchronization for seamless real-time listings.
+              {AGENCY_NAME} — your local real estate experts. Powered by direct MRI Vault and
+              Property Tree synchronisation for seamless real-time listings.
             </p>
             <div className="space-y-2 pt-2 text-xs text-slate-400">
               <p className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-[#c5a059]" />
-                <span>Head Office: Level 24, 100 Barangaroo Ave, Sydney NSW 2000</span>
+                <span>Head Office: {AGENCY_HEAD_OFFICE_ADDRESS}</span>
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-[#c5a059]" />
-                <span>1300 426 786 (1300 HAMPTON)</span>
+                <span>{AGENCY_PHONE}</span>
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-[#c5a059]" />
-                <span>enquiries@hamptonhomes.com.au</span>
+                <span>{AGENCY_EMAIL}</span>
               </p>
             </div>
           </div>
@@ -68,7 +78,7 @@ export function PublicFooter() {
           {/* Legal & Portals */}
           <div>
             <h4 className="font-serif text-sm font-semibold uppercase tracking-wider text-white mb-4">
-              Portals & Legal
+              Portals &amp; Legal
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li><Link href="/admin" className="hover:text-[#c5a059] transition-colors flex items-center gap-1">Staff Portal <ExternalLink className="h-3 w-3" /></Link></li>
@@ -81,8 +91,8 @@ export function PublicFooter() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} Hampton Homes Real Estate Pty Ltd. ABN 84 123 456 789. All rights reserved.</p>
-          <p className="mt-2 md:mt-0">MRI Vault & Property Tree Direct Integration Engine</p>
+          <p>© {new Date().getFullYear()} {AGENCY_LEGAL_NAME}. ABN {AGENCY_ABN}. All rights reserved.</p>
+          <p className="mt-2 md:mt-0">MRI Vault &amp; Property Tree Direct Integration Engine</p>
         </div>
       </div>
     </footer>

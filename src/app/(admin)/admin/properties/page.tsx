@@ -77,7 +77,7 @@ export default function AdminPropertiesPage() {
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider whitespace-nowrap">
                 <tr>
                   <th className="py-3.5 px-4">Photo & Address</th>
                   <th className="py-3.5 px-4">Listing Type</th>

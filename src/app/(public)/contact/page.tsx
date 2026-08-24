@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { MOCK_OFFICES } from "@/lib/properties/service";
+import { AGENCY_NAME } from "@/lib/agency-config";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -22,7 +23,7 @@ export default function ContactPage() {
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <Badge variant="gold">Get in Touch</Badge>
           <h1 className="font-serif text-4xl sm:text-5xl font-bold text-[#0a192f]">
-            Contact Hampton Homes
+            Contact {AGENCY_NAME}
           </h1>
           <p className="text-slate-600 text-base font-light">
             Connect with our sales executives, property management directors, or local branch offices across Australia.
@@ -70,8 +71,9 @@ export default function ContactPage() {
                   <form onSubmit={handleSubmit} className="space-y-4 text-xs font-medium">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-slate-700 font-bold">Your Name *</label>
+                        <label htmlFor="contact-name" className="text-slate-700 font-bold">Your Name *</label>
                         <input
+                          id="contact-name"
                           type="text"
                           required
                           placeholder="Full Name"
@@ -79,8 +81,9 @@ export default function ContactPage() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-slate-700 font-bold">Mobile Phone *</label>
+                        <label htmlFor="contact-phone" className="text-slate-700 font-bold">Mobile Phone *</label>
                         <input
+                          id="contact-phone"
                           type="tel"
                           required
                           placeholder="0400 000 000"
@@ -90,8 +93,9 @@ export default function ContactPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-slate-700 font-bold">Email Address *</label>
+                      <label htmlFor="contact-email" className="text-slate-700 font-bold">Email Address *</label>
                       <input
+                        id="contact-email"
                         type="email"
                         required
                         placeholder="your.email@example.com.au"
@@ -100,8 +104,8 @@ export default function ContactPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-slate-700 font-bold">Enquiry Category</label>
-                      <select className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-800">
+                      <label htmlFor="contact-category" className="text-slate-700 font-bold">Enquiry Category</label>
+                      <select id="contact-category" className="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-lg font-semibold text-slate-800">
                         <option value="General">General Enquiry</option>
                         <option value="Buying">Buying a Property</option>
                         <option value="Selling">Selling / Appraisal Request</option>
@@ -110,11 +114,12 @@ export default function ContactPage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-slate-700 font-bold">Message *</label>
+                      <label htmlFor="contact-message" className="text-slate-700 font-bold">Message Details *</label>
                       <textarea
-                        rows={4}
+                        id="contact-message"
                         required
-                        placeholder="How can we assist you today?"
+                        rows={4}
+                        placeholder="How can our team help you?"
                         className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0a192f]"
                       />
                     </div>

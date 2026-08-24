@@ -4,21 +4,36 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Phone, User, Menu, X, Heart, Search } from "lucide-react";
 import { Button } from "../ui/button";
+import {
+  AGENCY_NAME,
+  AGENCY_LOGO_URL,
+  AGENCY_PHONE_DISPLAY,
+  FEATURE_CUSTOMER_PORTAL,
+  FEATURE_COMMERCIAL_LISTINGS,
+  FEATURE_PROJECTS,
+  FEATURE_AUCTIONS,
+  FEATURE_PROPERTY_MANAGEMENT,
+  FEATURE_NEWS,
+  FEATURE_SUBURB_GUIDES,
+} from "@/lib/agency-config";
 
-const NAV_ITEMS = [
-  { label: "Buy", href: "/buy" },
-  { label: "Rent", href: "/rent" },
-  { label: "Sold", href: "/sold" },
-  { label: "Commercial", href: "/commercial" },
-  { label: "Projects", href: "/projects" },
-  { label: "Agents", href: "/agents" },
-  { label: "Offices", href: "/offices" },
-  { label: "Suburbs", href: "/suburbs" },
-  { label: "Sell", href: "/sell" },
-  { label: "Property Management", href: "/property-management" },
-  { label: "News", href: "/news" },
-  { label: "Contact", href: "/contact" },
+// Nav items are filtered by feature flags — disabled features disappear automatically
+const BASE_NAV_ITEMS = [
+  { label: "Buy", href: "/buy", enabled: true },
+  { label: "Rent", href: "/rent", enabled: true },
+  { label: "Sold", href: "/sold", enabled: true },
+  { label: "Commercial", href: "/commercial", enabled: FEATURE_COMMERCIAL_LISTINGS },
+  { label: "Projects", href: "/projects", enabled: FEATURE_PROJECTS },
+  { label: "Agents", href: "/agents", enabled: true },
+  { label: "Offices", href: "/offices", enabled: true },
+  { label: "Suburbs", href: "/suburbs", enabled: FEATURE_SUBURB_GUIDES },
+  { label: "Sell", href: "/sell", enabled: true },
+  { label: "Property Management", href: "/property-management", enabled: FEATURE_PROPERTY_MANAGEMENT },
+  { label: "News", href: "/news", enabled: FEATURE_NEWS },
+  { label: "Contact", href: "/contact", enabled: true },
 ];
+
+const NAV_ITEMS = BASE_NAV_ITEMS.filter((item) => item.enabled);
 
 export function PublicNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -31,21 +46,23 @@ export function PublicNavbar() {
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5">
               <Phone className="h-3.5 w-3.5 text-[#c5a059]" />
-              <span>1300 HAMPTON (1300 426 786)</span>
+              <span>{AGENCY_PHONE_DISPLAY}</span>
             </span>
             <span className="hidden md:inline-block text-slate-500">|</span>
             <span className="hidden md:inline-block text-slate-300">
-              Authoritative MRI Vault & Property Tree Integrated Agency
+              {AGENCY_NAME} — MRI Vault &amp; Property Tree Integrated
             </span>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/admin" className="hover:text-white transition-colors">
               Staff Portal
             </Link>
-            <Link href="/customer/dashboard" className="flex items-center gap-1 hover:text-white transition-colors">
-              <User className="h-3.5 w-3.5 text-[#c5a059]" />
-              <span>My Account</span>
-            </Link>
+            {FEATURE_CUSTOMER_PORTAL && (
+              <Link href="/customer/dashboard" className="flex items-center gap-1 hover:text-white transition-colors">
+                <User className="h-3.5 w-3.5 text-[#c5a059]" />
+                <span>My Account</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -56,19 +73,19 @@ export function PublicNavbar() {
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-3 group">
             <img
-              src="/logo.jpg"
-              alt="Hampton Homes Realtors"
+              src={AGENCY_LOGO_URL}
+              alt={`${AGENCY_NAME} Logo`}
               className="h-12 w-auto object-contain rounded-md shadow-sm group-hover:scale-105 transition-transform"
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-6">
-            {NAV_ITEMS.slice(0, 8).map((item) => (
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-6">
+            {NAV_ITEMS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium text-slate-700 hover:text-[#0a192f] transition-colors"
+                className="text-xs xl:text-sm font-medium text-slate-700 hover:text-[#0a192f] transition-colors whitespace-nowrap"
               >
                 {item.label}
               </Link>

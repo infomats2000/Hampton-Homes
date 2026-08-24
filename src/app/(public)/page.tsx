@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
+import { AGENCY_NAME, AGENCY_TAGLINE } from "@/lib/agency-config";
+import { SafeImage } from "@/components/ui/safe-image";
 
 export default function HomePage() {
   const featuredProperties = MOCK_AUSTRALIAN_PROPERTIES.slice(0, 3);
@@ -29,10 +31,11 @@ export default function HomePage() {
           </div>
 
           <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-white">
-            Hampton Homes Realestate
+            {AGENCY_NAME}
           </h1>
           <p className="text-sm sm:text-lg lg:text-xl text-slate-300 max-w-2xl mx-auto font-light leading-relaxed">
-            Explore premium residential sales, luxury rentals, and iconic coastal estates curated by Hampton Homes.
+            {AGENCY_TAGLINE}. Explore premium residential sales, luxury rentals, and iconic
+            coastal estates.
           </p>
 
           {/* Search Box Card */}
@@ -56,10 +59,11 @@ export default function HomePage() {
             {/* Inputs Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3 sm:gap-4">
               <div className="md:col-span-2 space-y-1">
-                <label className="text-[11px] font-semibold uppercase text-slate-500">Location / Suburb</label>
+                <label htmlFor="home-search-suburb" className="text-[11px] font-semibold uppercase text-slate-500">Location / Suburb</label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <input
+                    id="home-search-suburb"
                     type="text"
                     placeholder="Search Parramatta, Bondi Beach, Manly..."
                     className="w-full pl-9 pr-4 py-2.5 bg-slate-50 rounded-lg text-xs sm:text-sm border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0a192f]"
@@ -68,8 +72,8 @@ export default function HomePage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold uppercase text-slate-500">Property Type</label>
-                <select className="w-full py-2.5 px-3 bg-slate-50 rounded-lg text-xs sm:text-sm border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0a192f]">
+                <label htmlFor="home-search-type" className="text-[11px] font-semibold uppercase text-slate-500">Property Type</label>
+                <select id="home-search-type" className="w-full py-2.5 px-3 bg-slate-50 rounded-lg text-xs sm:text-sm border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#0a192f]">
                   <option value="">All Types</option>
                   <option value="House">House</option>
                   <option value="Apartment">Apartment</option>
@@ -111,9 +115,11 @@ export default function HomePage() {
             <Link key={item.externalId} href={`/property/${item.externalId}`} className="block group">
               <Card className="overflow-hidden h-full hover:shadow-xl transition-all border border-slate-200">
                 <div className="relative aspect-4/3 overflow-hidden bg-slate-100">
-                  <img
+                  <SafeImage
                     src={item.photos[0]}
                     alt={item.headline}
+                    fallbackTitle={item.suburb}
+                    fallbackSubtitle={item.priceDisplay}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-3 left-3 flex gap-2">

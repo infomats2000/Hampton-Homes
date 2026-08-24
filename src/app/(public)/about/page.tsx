@@ -4,6 +4,7 @@ import { Building2, ShieldCheck, Award, Users, ArrowRight, CheckCircle2 } from "
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { AGENCY_NAME } from "@/lib/agency-config";
 
 export default function AboutPage() {
   return (
@@ -16,7 +17,7 @@ export default function AboutPage() {
             Australia&apos;s Premier Real Estate Agency
           </h1>
           <p className="text-slate-600 text-base sm:text-lg font-light leading-relaxed">
-            Hampton Homes represents precision real estate sales, luxury property management, and direct MRI Vault synchronization across Sydney, Melbourne, and Brisbane.
+            {AGENCY_NAME} represents precision real estate sales, luxury property management, and direct MRI Vault synchronization across Sydney, Melbourne, and Brisbane.
           </p>
         </div>
 

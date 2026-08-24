@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { MOCK_AGENTS } from "@/lib/properties/service";
+import { AGENCY_NAME } from "@/lib/agency-config";
 
 export interface LeadItem {
   id: string;
@@ -35,7 +36,7 @@ export const MOCK_LEADS: LeadItem[] = [
     priority: "HIGH",
     propertyAddress: "142 Church Street, Parramatta NSW",
     assignedAgentName: "Marcus Vance",
-    officeName: "Hampton Homes Parramatta",
+    officeName: `${AGENCY_NAME} Parramatta`,
     createdAt: "2026-08-22 19:30",
     notes: "Enquired about inspection times and contract for Parramatta residence.",
   },
@@ -49,7 +50,7 @@ export const MOCK_LEADS: LeadItem[] = [
     priority: "URGENT",
     propertyAddress: "88 Ocean Drive, Bondi Beach NSW",
     assignedAgentName: "Elena Rostova",
-    officeName: "Hampton Homes Eastern Suburbs",
+    officeName: `${AGENCY_NAME} Eastern Suburbs`,
     createdAt: "2026-08-22 16:15",
     notes: "Requested sales appraisal. Planning to sell within 3 months.",
   },
@@ -63,7 +64,7 @@ export const MOCK_LEADS: LeadItem[] = [
     priority: "MEDIUM",
     propertyAddress: "27 Raglan Street, Manly NSW",
     assignedAgentName: "Oliver Sterling",
-    officeName: "Hampton Homes Manly",
+    officeName: `${AGENCY_NAME} Manly`,
     createdAt: "2026-08-21 14:00",
     notes: "Submitted rental application for Manly residence.",
   },
@@ -157,7 +158,7 @@ export default function AdminLeadsPage() {
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+                  <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider whitespace-nowrap">
                     <tr>
                       <th className="py-3 px-4">Lead Name</th>
                       <th className="py-3 px-4">Type</th>

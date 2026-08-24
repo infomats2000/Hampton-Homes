@@ -200,7 +200,7 @@ export default function AdminSEOPage() {
           {/* Redirect Rules Table */}
           <div className="overflow-x-auto border border-slate-200 rounded-lg">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider whitespace-nowrap">
                 <tr>
                   <th className="py-3 px-4">Old Source Path</th>
                   <th className="py-3 px-4">New Destination Path</th>

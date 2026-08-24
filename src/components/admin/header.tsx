@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Search, Bell, Shield, User, ExternalLink, RefreshCw, Menu } from "lucide-react";
 import { Button } from "../ui/button";
+import { AGENCY_NAME } from "@/lib/agency-config";
 
 interface AdminHeaderProps {
   onMenuToggle?: () => void;
@@ -65,10 +66,10 @@ export function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
         {/* Admin User Profile */}
         <div className="flex items-center gap-3 pl-2 sm:pl-3 border-l border-slate-200">
           <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-[#0a192f] text-white flex items-center justify-center font-bold text-xs shrink-0">
-            SH
+            {AGENCY_NAME.substring(0, 2).toUpperCase()}
           </div>
           <div className="hidden sm:flex flex-col">
-            <span className="text-xs font-semibold text-slate-900 leading-none">Sarah Hampton</span>
+            <span className="text-xs font-semibold text-slate-900 leading-none">{AGENCY_NAME} Admin</span>
             <span className="text-[10px] text-slate-500 font-medium">Super Administrator</span>
           </div>
         </div>

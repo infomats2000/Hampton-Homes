@@ -277,7 +277,7 @@ export default function AdminERPReportsPage() {
           <div className="overflow-x-auto">
             {domain === "PROPERTIES" ? (
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+                <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider whitespace-nowrap">
                   <tr>
                     <th className="py-3 px-4">MRI External ID</th>
                     <th className="py-3 px-4">Property Address</th>
@@ -308,7 +308,7 @@ export default function AdminERPReportsPage() {
               </table>
             ) : domain === "CUSTOMERS" ? (
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+                <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider whitespace-nowrap">
                   <tr>
                     <th className="py-3 px-4">Lead ID</th>
                     <th className="py-3 px-4">Customer Name</th>
@@ -337,7 +337,7 @@ export default function AdminERPReportsPage() {
               </table>
             ) : (
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+                <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider whitespace-nowrap">
                   <tr>
                     <th className="py-3 px-4">Agent Name</th>
                     <th className="py-3 px-4">Position</th>

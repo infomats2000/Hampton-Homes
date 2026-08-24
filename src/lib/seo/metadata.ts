@@ -1,5 +1,6 @@
 import { MRIRawProperty } from "../mri/provider.interface";
 import { AgentModel, OfficeModel } from "../properties/service";
+import { AGENCY_NAME, AGENCY_WEBSITE_URL, AGENCY_PHONE, AGENCY_EMAIL } from "../agency-config";
 
 /**
  * Generates Schema.org JSON-LD for RealEstateListing / Residence
@@ -47,7 +48,7 @@ export function generateAgentSchema(agent: AgentModel) {
     image: agent.photoUrl,
     worksFor: {
       "@type": "Organization",
-      name: "Hampton Homes Real Estate",
+      name: `${AGENCY_NAME} Real Estate`,
     },
   };
 }

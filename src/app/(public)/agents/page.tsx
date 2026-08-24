@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { MOCK_AGENTS } from "@/lib/properties/service";
+import { AGENCY_NAME } from "@/lib/agency-config";
 
 export default function AgentsDirectoryPage() {
   return (
@@ -17,7 +18,7 @@ export default function AgentsDirectoryPage() {
             Meet Our Real Estate Experts
           </h1>
           <p className="text-slate-600 text-base font-light">
-            Dedicated sales executives, property managers, and luxury estate advisors representing Hampton Homes across Australia.
+            Dedicated sales executives, property managers, and luxury estate advisors representing {AGENCY_NAME} across Australia.
           </p>
         </div>
 

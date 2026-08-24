@@ -302,7 +302,7 @@ export default function AdminAnalyticsPage() {
         </CardHeader>
         <CardContent className="p-0">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+            <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider whitespace-nowrap">
               <tr>
                 <th className="py-3 px-4">Property Address</th>
                 <th className="py-3 px-4">Suburb</th>

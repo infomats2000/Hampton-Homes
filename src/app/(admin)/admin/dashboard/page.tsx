@@ -37,6 +37,114 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
+      {/* Quick Start Onboarding Hub for New Agency Users */}
+      <Card className="bg-gradient-to-r from-[#071325] via-[#0a192f] to-[#1a365d] text-white border-none shadow-xl overflow-hidden relative">
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-radial from-amber-500/10 to-transparent pointer-events-none" />
+        <CardContent className="p-6 sm:p-8 space-y-6 relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700/60 pb-5">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-semibold">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                <span>Zero-Training Staff Onboarding Guide</span>
+              </div>
+              <h2 className="font-serif text-2xl font-bold text-white mt-2">
+                Welcome to Infomats Real Estate Platform
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-2xl font-light">
+                Follow these 5 simple steps to set up your agency, syndicate listings, generate AI copy, and manage trust accounts with zero friction.
+              </p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl border border-white/10 text-center shrink-0">
+              <p className="text-[10px] uppercase tracking-wider text-slate-300 font-bold">Platform Readiness</p>
+              <p className="text-xl font-bold text-[#c5a059]">100% Ready</p>
+            </div>
+          </div>
+
+          {/* 5 Onboarding Action Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <Link
+              href="/admin/settings"
+              className="bg-white/5 hover:bg-white/15 border border-white/10 rounded-xl p-4 transition-all group hover:scale-[1.02]"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-[#c5a059]">Step 1</span>
+                <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-white transition-colors" />
+              </div>
+              <p className="font-bold text-xs text-white group-hover:text-[#c5a059] transition-colors">
+                Agency Settings
+              </p>
+              <p className="text-[11px] text-slate-300 mt-1 leading-snug">
+                Set logo, ABN, brand colours &amp; MRI credentials.
+              </p>
+            </Link>
+
+            <Link
+              href="/admin/syndication"
+              className="bg-white/5 hover:bg-white/15 border border-white/10 rounded-xl p-4 transition-all group hover:scale-[1.02]"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-[#c5a059]">Step 2</span>
+                <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-white transition-colors" />
+              </div>
+              <p className="font-bold text-xs text-white group-hover:text-[#c5a059] transition-colors">
+                Portal Syndication
+              </p>
+              <p className="text-[11px] text-slate-300 mt-1 leading-snug">
+                Audit REAXML &amp; Domain feed readiness.
+              </p>
+            </Link>
+
+            <Link
+              href="/admin/financial"
+              className="bg-white/5 hover:bg-white/15 border border-white/10 rounded-xl p-4 transition-all group hover:scale-[1.02]"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-[#c5a059]">Step 3</span>
+                <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-white transition-colors" />
+              </div>
+              <p className="font-bold text-xs text-white group-hover:text-[#c5a059] transition-colors">
+                Trust Accounting
+              </p>
+              <p className="text-[11px] text-slate-300 mt-1 leading-snug">
+                Issue statutory receipts &amp; GST splits.
+              </p>
+            </Link>
+
+            <Link
+              href="/admin/property-management"
+              className="bg-white/5 hover:bg-white/15 border border-white/10 rounded-xl p-4 transition-all group hover:scale-[1.02]"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-[#c5a059]">Step 4</span>
+                <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-white transition-colors" />
+              </div>
+              <p className="font-bold text-xs text-white group-hover:text-[#c5a059] transition-colors">
+                Tenancy Operations
+              </p>
+              <p className="text-[11px] text-slate-300 mt-1 leading-snug">
+                Track lease expiries &amp; work orders.
+              </p>
+            </Link>
+
+            <Link
+              href="/admin/marketing-tasks"
+              className="bg-white/5 hover:bg-white/15 border border-white/10 rounded-xl p-4 transition-all group hover:scale-[1.02]"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-[#c5a059]">Step 5</span>
+                <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-white transition-colors" />
+              </div>
+              <p className="font-bold text-xs text-white group-hover:text-[#c5a059] transition-colors">
+                AI Copy &amp; Tasks
+              </p>
+              <p className="text-[11px] text-slate-300 mt-1 leading-snug">
+                Generate AI copy &amp; view matched buyers.
+              </p>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Stats Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
@@ -95,7 +203,7 @@ export default function AdminDashboardPage() {
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+                  <thead className="bg-slate-50 border-y border-slate-200 text-slate-500 font-semibold uppercase tracking-wider whitespace-nowrap">
                     <tr>
                       <th className="py-3 px-4">Property</th>
                       <th className="py-3 px-4">MRI Provider</th>

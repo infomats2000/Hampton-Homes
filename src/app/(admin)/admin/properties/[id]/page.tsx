@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
 import { getPropertyById } from "@/lib/properties/service";
+import { AGENCY_NAME } from "@/lib/agency-config";
 
 export default function AdminPropertyOverridePage() {
   const params = useParams();
@@ -16,7 +17,7 @@ export default function AdminPropertyOverridePage() {
   const property = getPropertyById(id) || MOCK_AUSTRALIAN_PROPERTIES[0];
 
   const [savedSuccess, setSavedSuccess] = useState(false);
-  const [seoTitle, setSeoTitle] = useState(`${property.headline} | Hampton Homes ${property.suburb}`);
+  const [seoTitle, setSeoTitle] = useState(`${property.headline} | ${AGENCY_NAME} ${property.suburb}`);
   const [seoDescription, setSeoDescription] = useState(property.description.slice(0, 150) + "...");
   const [customBadge, setCustomBadge] = useState("Prestige Waterfront");
   const [customHeadline, setCustomHeadline] = useState(property.headline);

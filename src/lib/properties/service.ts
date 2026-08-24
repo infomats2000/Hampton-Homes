@@ -1,5 +1,9 @@
 import { MOCK_AUSTRALIAN_PROPERTIES } from "../mri/mock-provider";
 import { MRIRawProperty } from "../mri/provider.interface";
+import { AGENCY_NAME, AGENCY_EMAIL } from "../agency-config";
+
+// Derive the agency's email domain for mock agent email addresses
+const _emailDomain = AGENCY_EMAIL.split("@")[1] ?? "agency.com.au";
 
 export interface AgentModel {
   id: string;
@@ -42,8 +46,8 @@ export const MOCK_AGENTS: AgentModel[] = [
     photoUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80",
     phone: "(02) 9891 1234",
     mobile: "0412 345 678",
-    email: "marcus.vance@hamptonhomes.com.au",
-    officeName: "Hampton Homes Parramatta",
+    email: `marcus.vance@${_emailDomain}`,
+    officeName: `${AGENCY_NAME} Parramatta`,
     bio: "With over 15 years of real estate experience across Sydney's Western Suburbs and Parramatta CBD, Marcus has set multiple record sales. Known for integrity, market insight, and exceptional negotiation.",
     isFeatured: true,
     languages: ["English", "Mandarin"],
@@ -56,8 +60,8 @@ export const MOCK_AGENTS: AgentModel[] = [
     photoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
     phone: "(02) 9362 5555",
     mobile: "0498 765 432",
-    email: "elena.rostova@hamptonhomes.com.au",
-    officeName: "Hampton Homes Eastern Suburbs",
+    email: `elena.rostova@${_emailDomain}`,
+    officeName: `${AGENCY_NAME} Eastern Suburbs`,
     bio: "Specialising in prestige waterfront properties across Bondi Beach, Mosman, and Double Bay. Elena brings unparalleled passion for architectural design and high-net-worth client representation.",
     isFeatured: true,
     languages: ["English", "Russian"],
@@ -70,8 +74,8 @@ export const MOCK_AGENTS: AgentModel[] = [
     photoUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=800&q=80",
     phone: "(02) 9977 8888",
     mobile: "0433 111 222",
-    email: "oliver.sterling@hamptonhomes.com.au",
-    officeName: "Hampton Homes Manly",
+    email: `oliver.sterling@${_emailDomain}`,
+    officeName: `${AGENCY_NAME} Manly`,
     bio: "Oliver leads Northern Beaches rental operations. He ensures seamless property performance for landlords and premium tenant experiences across Manly, Freshwater, and Mosman.",
     isFeatured: false,
     languages: ["English"],
@@ -81,14 +85,14 @@ export const MOCK_AGENTS: AgentModel[] = [
 export const MOCK_OFFICES: OfficeModel[] = [
   {
     id: "office-01",
-    name: "Hampton Homes Parramatta",
+    name: `${AGENCY_NAME} Parramatta`,
     slug: "parramatta",
     address: "Level 12, 100 Church Street",
     suburb: "Parramatta",
     state: "NSW",
     postcode: "2150",
     phone: "(02) 9891 1234",
-    email: "parramatta@hamptonhomes.com.au",
+    email: `parramatta@${_emailDomain}`,
     isHeadOffice: false,
     description: "Serving Parramatta, Westmead, Harris Park, and the Greater Western Sydney growth corridor.",
     agentCount: 8,
@@ -96,14 +100,14 @@ export const MOCK_OFFICES: OfficeModel[] = [
   },
   {
     id: "office-02",
-    name: "Hampton Homes Eastern Suburbs",
+    name: `${AGENCY_NAME} Eastern Suburbs`,
     slug: "eastern-suburbs",
     address: "24 Bondi Road",
     suburb: "Bondi Beach",
     state: "NSW",
     postcode: "2026",
     phone: "(02) 9362 5555",
-    email: "bondi@hamptonhomes.com.au",
+    email: `bondi@${_emailDomain}`,
     isHeadOffice: true,
     description: "Our prestige coastal division representing luxury residences across Bondi, Bellevue Hill, Mosman, and Surry Hills.",
     agentCount: 12,
@@ -111,14 +115,14 @@ export const MOCK_OFFICES: OfficeModel[] = [
   },
   {
     id: "office-03",
-    name: "Hampton Homes Manly",
+    name: `${AGENCY_NAME} Manly`,
     slug: "manly",
     address: "15 The Corso",
     suburb: "Manly",
     state: "NSW",
     postcode: "2095",
     phone: "(02) 9977 8888",
-    email: "manly@hamptonhomes.com.au",
+    email: `manly@${_emailDomain}`,
     isHeadOffice: false,
     description: "Northern Beaches property sales and rental specialists covering Manly, Fairlight, Freshwater, and Queenscliff.",
     agentCount: 6,

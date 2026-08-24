@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import {
+  AGENCY_NAME,
+  AGENCY_SEO_TITLE_DEFAULT,
+  AGENCY_SEO_TITLE_TEMPLATE,
+  AGENCY_SEO_DESCRIPTION,
+  AGENCY_LOGO_URL,
+  AGENCY_OG_IMAGE_URL,
+  AGENCY_WEBSITE_URL,
+} from "@/lib/agency-config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,30 +22,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.APP_URL || "https://hampton-homes.vercel.app"),
+  metadataBase: new URL(process.env.APP_URL || AGENCY_WEBSITE_URL),
   title: {
-    default: "Hampton Homes | Real Estate Australia & Prestige Property Portal",
-    template: "%s | Hampton Homes Real Estate",
+    default: AGENCY_SEO_TITLE_DEFAULT,
+    template: AGENCY_SEO_TITLE_TEMPLATE,
   },
-  description:
-    "Australia's premier real estate agency platform powered by direct MRI Vault & Property Tree integration. Search luxury houses, coastal apartments, and executive sales across Sydney, Melbourne, and Brisbane.",
+  description: AGENCY_SEO_DESCRIPTION,
   icons: {
-    icon: "/logo.jpg",
-    shortcut: "/logo.jpg",
-    apple: "/logo.jpg",
+    icon: AGENCY_LOGO_URL,
+    shortcut: AGENCY_LOGO_URL,
+    apple: AGENCY_LOGO_URL,
   },
   openGraph: {
-    title: "Hampton Homes | Real Estate Australia & Prestige Property Portal",
-    description:
-      "Australia's premier real estate agency platform powered by direct MRI Vault & Property Tree integration. Search luxury houses, coastal apartments, and executive sales.",
-    url: "https://hampton-homes.vercel.app",
-    siteName: "Hampton Homes Real Estate",
+    title: AGENCY_SEO_TITLE_DEFAULT,
+    description: AGENCY_SEO_DESCRIPTION,
+    url: AGENCY_WEBSITE_URL,
+    siteName: `${AGENCY_NAME} Real Estate`,
     images: [
       {
-        url: "/logo.jpg",
+        url: AGENCY_OG_IMAGE_URL,
         width: 1200,
         height: 1200,
-        alt: "Hampton Homes Realtors Official Logo",
+        alt: `${AGENCY_NAME} Official Logo`,
       },
     ],
     locale: "en_AU",
@@ -44,10 +51,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hampton Homes | Real Estate Australia",
-    description:
-      "Australia's premier real estate agency platform powered by direct MRI Vault & Property Tree integration.",
-    images: ["/logo.jpg"],
+    title: `${AGENCY_NAME} | Real Estate Australia`,
+    description: AGENCY_SEO_DESCRIPTION,
+    images: [AGENCY_OG_IMAGE_URL],
   },
 };
 

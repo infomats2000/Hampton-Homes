@@ -4,6 +4,8 @@
  * and Microsoft Outlook import.
  */
 
+import { AGENCY_NAME, AGENCY_EMAIL } from "../../agency-config";
+
 export interface ICalEvent {
   uid?: string;
   title: string;
@@ -22,13 +24,14 @@ export interface ICalEvent {
  */
 export function generateICalEvent(event: ICalEvent): string {
   const now = formatICalDate(new Date());
+  const emailDomain = AGENCY_EMAIL.split("@")[1] ?? "agency.com.au";
   const uid =
-    event.uid ?? `${Date.now()}-${Math.random().toString(36).slice(2)}@hamptonhomes.com.au`;
+    event.uid ?? `${Date.now()}-${Math.random().toString(36).slice(2)}@${emailDomain}`;
 
   const lines: string[] = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Hampton Homes Realtors//Real Estate Platform//EN",
+    `PRODID:-//${AGENCY_NAME} Realtors//Real Estate Platform//EN`,
     "CALSCALE:GREGORIAN",
     "METHOD:REQUEST",
     "BEGIN:VEVENT",
@@ -92,7 +95,7 @@ export function generateICalFile(events: ICalEvent[]): string {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Hampton Homes Realtors//Real Estate Platform//EN",
+    `PRODID:-//${AGENCY_NAME} Realtors//Real Estate Platform//EN`,
     "CALSCALE:GREGORIAN",
     "METHOD:REQUEST",
     ...eventLines,
