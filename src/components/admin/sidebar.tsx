@@ -35,6 +35,7 @@ import {
   KeyRound,
   Sparkles,
   Quote,
+  UploadCloud,
 } from "lucide-react";
 import {
   AGENCY_NAME,
@@ -81,6 +82,7 @@ const ADMIN_MENU_GROUPS: Array<{ title: string; items: MenuItem[] }> = [
     items: (
       [
         { label: "All Integrations", href: "/admin/integrations", icon: Network, badge: "Hub" },
+        { label: "AI Data Importer", href: "/admin/import", icon: UploadCloud, badge: "AI" },
         FEATURE_XERO_SYNC ? { label: "Xero Accounting", href: "/admin/integrations/xero", icon: DollarSign, badge: "Sync" } : null,
         FEATURE_PORTAL_SYNDICATION ? { label: "Portal Feeds", href: "/admin/syndication", icon: Radio, badge: "REA" } : null,
         { label: "Unified Contacts", href: "/admin/contacts", icon: BookUser },
