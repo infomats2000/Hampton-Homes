@@ -10,9 +10,9 @@
 
 // ─── Brand & Identity ────────────────────────────────────────────────────────
 
-export const AGENCY_NAME = process.env.NEXT_PUBLIC_AGENCY_NAME ?? "Infomats Real Estate";
-export const AGENCY_LEGAL_NAME = process.env.NEXT_PUBLIC_AGENCY_LEGAL_NAME ?? "Infomats Real Estate Pty Ltd";
-export const AGENCY_TAGLINE = process.env.NEXT_PUBLIC_AGENCY_TAGLINE ?? "Australia's premier real estate platform";
+export const AGENCY_NAME = process.env.NEXT_PUBLIC_AGENCY_NAME ?? "Infomats Real Estate ERP";
+export const AGENCY_LEGAL_NAME = process.env.NEXT_PUBLIC_AGENCY_LEGAL_NAME ?? "Infomats Real Estate ERP Pty Ltd";
+export const AGENCY_TAGLINE = process.env.NEXT_PUBLIC_AGENCY_TAGLINE ?? "Australia's premier real estate management platform & ERP";
 export const AGENCY_ABN = process.env.NEXT_PUBLIC_AGENCY_ABN ?? "84 123 456 789";
 export const AGENCY_LICENCE = process.env.NEXT_PUBLIC_AGENCY_LICENCE ?? ""; // NSW Fair Trading / State licence number
 export const AGENCY_STATE = process.env.NEXT_PUBLIC_AGENCY_STATE ?? "NSW"; // Primary operating state

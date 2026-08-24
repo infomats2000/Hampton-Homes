@@ -19,11 +19,17 @@ export function PublicFooter() {
           {/* Brand Info */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <img
-                src={AGENCY_LOGO_URL}
-                alt={`${AGENCY_NAME} Logo`}
-                className="h-12 w-auto object-contain rounded-md shadow-sm"
-              />
+              <div className="w-10 h-10 rounded-xl bg-white/10 text-[#c5a059] border border-white/20 flex items-center justify-center font-serif font-bold text-xl shadow-md">
+                I
+              </div>
+              <div className="flex flex-col">
+                <span className="font-serif font-bold text-lg text-white tracking-tight leading-none">
+                  {AGENCY_NAME}
+                </span>
+                <span className="text-[10px] text-slate-400 font-semibold tracking-wider uppercase mt-0.5">
+                  Real Estate ERP System
+                </span>
+              </div>
             </div>
             <p className="text-sm text-slate-400 max-w-sm leading-relaxed">
               {AGENCY_NAME} — your local real estate experts. Powered by direct MRI Vault and

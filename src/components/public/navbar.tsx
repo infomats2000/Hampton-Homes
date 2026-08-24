@@ -72,11 +72,17 @@ export function PublicNavbar() {
         <div className="flex h-20 items-center justify-between">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <img
-              src={AGENCY_LOGO_URL}
-              alt={`${AGENCY_NAME} Logo`}
-              className="h-12 w-auto object-contain rounded-md shadow-sm group-hover:scale-105 transition-transform"
-            />
+            <div className="w-10 h-10 rounded-xl bg-[#071325] text-[#c5a059] border border-slate-700 flex items-center justify-center font-serif font-bold text-xl shadow-md group-hover:scale-105 transition-transform">
+              I
+            </div>
+            <div className="flex flex-col">
+              <span className="font-serif font-bold text-base sm:text-lg text-[#0a192f] tracking-tight leading-none group-hover:text-[#c5a059] transition-colors">
+                {AGENCY_NAME}
+              </span>
+              <span className="text-[10px] text-slate-500 font-semibold tracking-wider uppercase mt-0.5">
+                Real Estate ERP System
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
