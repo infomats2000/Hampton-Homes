@@ -128,10 +128,19 @@ export default function AdminInspectionsPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleExportCSV(sess)}
-                    className="gap-1.5 text-xs"
+                    className="gap-1.5 text-xs font-semibold"
                   >
                     <Download className="h-3.5 w-3.5" />
-                    <span>Export Attendee Sheet (CSV)</span>
+                    <span>CSV List</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open(`/api/appointments/${sess.id}/ics`, "_blank")}
+                    className="gap-1.5 text-xs font-bold text-sky-800 border-sky-200 bg-sky-50 hover:bg-sky-100"
+                  >
+                    <Calendar className="h-3.5 w-3.5 text-sky-600" />
+                    <span>Add to iPhone Calendar (.ics)</span>
                   </Button>
                 </div>
               </div>
