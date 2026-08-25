@@ -1,16 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Heart,
   Search,
   Bell,
   Calendar,
   User,
-  Sliders,
-  History,
   LayoutDashboard,
   LogOut,
   ChevronRight,
@@ -28,8 +26,51 @@ const CUSTOMER_NAV_ITEMS = [
   { label: "Profile & Privacy", href: "/customer/profile", icon: User },
 ];
 
+interface CustomerUserState {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 export default function CustomerPortalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [user, setUser] = useState<CustomerUserState>({
+    firstName: "James",
+    lastName: "Harrison",
+    email: "james.harrison@example.com.au",
+  });
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await fetch("/api/auth/me");
+        const data = await res.json();
+        if (data.success && data.user) {
+          setUser({
+            firstName: data.user.firstName,
+            lastName: data.user.lastName,
+            email: data.user.email,
+          });
+        }
+      } catch {
+        // Fallback to default
+      }
+    }
+    fetchUser();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/login");
+      router.refresh();
+    } catch {
+      router.push("/login");
+    }
+  };
+
+  const initials = `${user.firstName[0] || ""}${user.lastName[0] || ""}`.toUpperCase() || "CU";
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
@@ -42,12 +83,14 @@ export default function CustomerPortalLayout({ children }: { children: React.Rea
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
               {/* Customer Profile Header */}
               <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-                <div className="h-12 w-12 rounded-full gold-gradient text-slate-900 font-bold flex items-center justify-center text-lg">
-                  JH
+                <div className="h-12 w-12 rounded-full gold-gradient text-slate-900 font-bold flex items-center justify-center text-lg shadow-sm">
+                  {initials}
                 </div>
-                <div>
-                  <h3 className="font-serif font-bold text-slate-900 text-base">James Harrison</h3>
-                  <p className="text-xs text-slate-500 font-medium">james.harrison@example.com.au</p>
+                <div className="min-w-0">
+                  <h3 className="font-serif font-bold text-slate-900 text-base truncate">
+                    {user.firstName} {user.lastName}
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium truncate">{user.email}</p>
                   <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 font-semibold mt-1">
                     <ShieldCheck className="h-3 w-3" />
                     <span>Verified Customer</span>
@@ -81,13 +124,13 @@ export default function CustomerPortalLayout({ children }: { children: React.Rea
               </nav>
 
               <div className="pt-2 border-t border-slate-100">
-                <Link
-                  href="/"
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Log Out</span>
-                </Link>
+                </button>
               </div>
             </div>
           </aside>

@@ -8,21 +8,22 @@ if (typeof window === "undefined" && !process.env.VERCEL) {
   neonConfig.webSocketConstructor = ws;
 }
 
-const connectionString = process.env.DATABASE_URL;
-
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-function getPrismaClient(): PrismaClient {
+function createPrismaClient(): PrismaClient {
+  const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
-    // Return standard client if DATABASE_URL is not set yet
-    return new PrismaClient();
+    // If not set yet (e.g. during build-time page rendering), provide standard fallback or throw if called
+    return new PrismaClient({
+      adapter: new PrismaNeon({ connectionString: "postgresql://postgres:postgres@localhost:5432/placeholder" }),
+    });
   }
 
   const adapter = new PrismaNeon({ connectionString });
   return new PrismaClient({ adapter });
 }
 
-export const prisma = globalForPrisma.prisma ?? getPrismaClient();
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
