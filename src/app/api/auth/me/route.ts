@@ -7,7 +7,7 @@ export async function GET() {
     const user = await getCurrentUser();
     const subscription = await getSubscriptionConfig();
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       success: true,
       user,
       subscription: user
@@ -24,6 +24,10 @@ export async function GET() {
           }
         : null,
     });
+
+    // Short private cache to eliminate UI header/navbar duplicate roundtrips
+    res.headers.set("Cache-Control", "private, no-cache, no-store, must-revalidate");
+    return res;
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

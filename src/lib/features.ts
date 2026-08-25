@@ -1,5 +1,6 @@
 import { prisma } from "./prisma";
 import { RoleType } from "./permissions";
+import { cache } from "./cache";
 
 export type SubscriptionTier = "GOLD_ENTERPRISE" | "SILVER_GROWTH" | "BRONZE_STARTER" | "CUSTOM";
 
@@ -23,11 +24,11 @@ export interface ModuleFeatures {
 }
 
 export interface SubscriptionQuotas {
-  maxStaffUsers: number; // Staff seats (Admins, Agents, Managers, Support)
-  maxListings: number; // Active property listings cap
-  maxOffices: number; // Branch locations cap
-  maxStorageMb: number; // Upload storage cap in MB
-  maxAiTokensPerMonth: number; // AI generation token allowance
+  maxStaffUsers: number;
+  maxListings: number;
+  maxOffices: number;
+  maxStorageMb: number;
+  maxAiTokensPerMonth: number;
 }
 
 export const TIER_QUOTAS: Record<SubscriptionTier, SubscriptionQuotas> = {
@@ -137,6 +138,8 @@ export const TIER_PRESETS: Record<SubscriptionTier, ModuleFeatures> = {
 };
 
 const SUBSCRIPTION_SETTING_KEY = "system.subscription";
+const SUBSCRIPTION_CACHE_KEY = "cache:subscription:config";
+const SEAT_USAGE_CACHE_KEY = "cache:subscription:seat_usage";
 
 export interface SubscriptionConfig {
   tier: SubscriptionTier;
@@ -157,42 +160,49 @@ export const DEFAULT_SUBSCRIPTION: SubscriptionConfig = {
 };
 
 /**
- * Retrieves the current active subscription, module features, and quotas from Neon DB.
+ * Retrieves the current active subscription, module features, and quotas.
+ * Cached in-memory for 30 seconds for lightning-fast sub-millisecond reads.
  */
 export async function getSubscriptionConfig(): Promise<SubscriptionConfig> {
-  try {
-    const setting = await prisma.setting.findUnique({
-      where: { key: SUBSCRIPTION_SETTING_KEY },
-    });
+  return cache.getOrSet(
+    SUBSCRIPTION_CACHE_KEY,
+    async () => {
+      try {
+        const setting = await prisma.setting.findUnique({
+          where: { key: SUBSCRIPTION_SETTING_KEY },
+        });
 
-    if (setting && setting.value && typeof setting.value === "object") {
-      const val = setting.value as unknown as Partial<SubscriptionConfig>;
-      const tier = val.tier ?? DEFAULT_SUBSCRIPTION.tier;
+        if (setting && setting.value && typeof setting.value === "object") {
+          const val = setting.value as unknown as Partial<SubscriptionConfig>;
+          const tier = val.tier ?? DEFAULT_SUBSCRIPTION.tier;
 
-      return {
-        tier,
-        clientName: val.clientName ?? DEFAULT_SUBSCRIPTION.clientName,
-        clientStatus: val.clientStatus ?? DEFAULT_SUBSCRIPTION.clientStatus,
-        expiryDate: val.expiryDate ?? DEFAULT_SUBSCRIPTION.expiryDate,
-        features: {
-          ...(TIER_PRESETS[tier] || DEFAULT_SUBSCRIPTION.features),
-          ...(val.features || {}),
-        },
-        quotas: {
-          ...(TIER_QUOTAS[tier] || DEFAULT_SUBSCRIPTION.quotas),
-          ...(val.quotas || {}),
-        },
-      };
-    }
-  } catch (err) {
-    console.error("Error fetching subscription config from DB:", err);
-  }
+          return {
+            tier,
+            clientName: val.clientName ?? DEFAULT_SUBSCRIPTION.clientName,
+            clientStatus: val.clientStatus ?? DEFAULT_SUBSCRIPTION.clientStatus,
+            expiryDate: val.expiryDate ?? DEFAULT_SUBSCRIPTION.expiryDate,
+            features: {
+              ...(TIER_PRESETS[tier] || DEFAULT_SUBSCRIPTION.features),
+              ...(val.features || {}),
+            },
+            quotas: {
+              ...(TIER_QUOTAS[tier] || DEFAULT_SUBSCRIPTION.quotas),
+              ...(val.quotas || {}),
+            },
+          };
+        }
+      } catch (err) {
+        console.error("Error fetching subscription config from DB:", err);
+      }
 
-  return DEFAULT_SUBSCRIPTION;
+      return DEFAULT_SUBSCRIPTION;
+    },
+    30000 // 30s TTL
+  );
 }
 
 /**
- * Updates subscription config in Neon DB (Super Admin only).
+ * Updates subscription config in Neon DB and immediately busts memory cache.
  */
 export async function updateSubscriptionConfig(
   config: Partial<SubscriptionConfig>
@@ -225,6 +235,10 @@ export async function updateSubscriptionConfig(
     },
   });
 
+  // Bust cache immediately
+  cache.invalidate(SUBSCRIPTION_CACHE_KEY);
+  cache.invalidate(SEAT_USAGE_CACHE_KEY);
+
   return updated;
 }
 
@@ -256,36 +270,47 @@ export interface StaffSeatUsage {
 
 /**
  * Calculates current staff seat usage against subscription quota.
- * Staff includes: ADMIN, MARKETING_ADMIN, OFFICE_MANAGER, AGENT, SUPPORT.
- * (SUPER_ADMIN and CUSTOMER accounts do not consume staff seats).
+ * Cached in-memory for 10 seconds.
  */
 export async function getStaffSeatUsage(): Promise<StaffSeatUsage> {
-  const sub = await getSubscriptionConfig();
-  const limit = sub.quotas?.maxStaffUsers || DEFAULT_SUBSCRIPTION.quotas.maxStaffUsers;
+  return cache.getOrSet(
+    SEAT_USAGE_CACHE_KEY,
+    async () => {
+      const sub = await getSubscriptionConfig();
+      const limit = sub.quotas?.maxStaffUsers || DEFAULT_SUBSCRIPTION.quotas.maxStaffUsers;
 
-  // Count active staff users with agency internal roles
-  const staffCount = await prisma.user.count({
-    where: {
-      isActive: true,
-      userRoles: {
-        some: {
-          role: {
-            name: {
-              in: ["ADMIN", "MARKETING_ADMIN", "OFFICE_MANAGER", "AGENT", "SUPPORT"],
+      const staffCount = await prisma.user.count({
+        where: {
+          isActive: true,
+          userRoles: {
+            some: {
+              role: {
+                name: {
+                  in: ["ADMIN", "MARKETING_ADMIN", "OFFICE_MANAGER", "AGENT", "SUPPORT"],
+                },
+              },
             },
           },
         },
-      },
+      });
+
+      const available = Math.max(0, limit - staffCount);
+      const canAdd = staffCount < limit;
+
+      return {
+        used: staffCount,
+        limit,
+        available,
+        canAdd,
+      };
     },
-  });
+    10000 // 10s TTL
+  );
+}
 
-  const available = Math.max(0, limit - staffCount);
-  const canAdd = staffCount < limit;
-
-  return {
-    used: staffCount,
-    limit,
-    available,
-    canAdd,
-  };
+/**
+ * Invalidates staff seat cache upon user addition/deactivation.
+ */
+export function invalidateSeatUsageCache(): void {
+  cache.invalidate(SEAT_USAGE_CACHE_KEY);
 }

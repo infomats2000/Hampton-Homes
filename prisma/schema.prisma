@@ -101,6 +101,8 @@ model User {
   auditLogs        AuditLog[]       @relation("ActorAuditLogs")
 
   @@index([email])
+  @@index([isActive])
+  @@index([createdAt])
 }
 
 model Role {
@@ -135,6 +137,8 @@ model RolePermission {
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@id([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
 }
 
 model UserRole {
@@ -145,6 +149,8 @@ model UserRole {
   role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
 }
 
 model CustomerProfile {
@@ -230,6 +236,8 @@ model Property {
 
   @@index([suburb, state, postcode])
   @@index([mriId])
+  @@index([propertyType])
+  @@index([createdAt])
 }
 
 model Listing {
@@ -254,6 +262,10 @@ model Listing {
   enquiries      Enquiry[]
 
   @@index([status, listingType])
+  @@index([propertyId])
+  @@index([priceNumeric])
+  @@index([publishedAt])
+  @@index([createdAt])
 }
 
 model PropertyAgent {
@@ -265,6 +277,8 @@ model PropertyAgent {
   agent      Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
   @@id([listingId, agentId])
+  @@index([listingId])
+  @@index([agentId])
 }
 
 model PropertyMedia {
@@ -280,6 +294,8 @@ model PropertyMedia {
   property     Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([propertyId, mediaType])
+  @@index([propertyId, isPrimary])
+  @@index([propertyId, displayOrder])
 }
 
 model PropertyFeature {
@@ -395,6 +411,11 @@ model Lead {
   property      Property?  @relation(fields: [propertyId], references: [id])
   activities    LeadActivity[]
   enquiries     Enquiry[]
+
+  @@index([status, createdAt])
+  @@index([agentId])
+  @@index([officeId])
+  @@index([email])
 }
 
 model LeadActivity {
@@ -421,6 +442,9 @@ model Enquiry {
 
   listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
   lead         Lead?    @relation(fields: [leadId], references: [id])
+
+  @@index([listingId])
+  @@index([leadId])
 }
 
 model Favourite {
@@ -430,6 +454,9 @@ model Favourite {
   createdAt         DateTime        @default(now())
 
   customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+
+  @@index([customerProfileId])
+  @@index([propertyId])
 }
 
 model SavedSearch {
@@ -442,6 +469,8 @@ model SavedSearch {
   createdAt         DateTime        @default(now())
 
   customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+
+  @@index([customerProfileId])
 }
 
 model RecentlyViewed {
@@ -451,6 +480,9 @@ model RecentlyViewed {
   viewedAt          DateTime        @default(now())
 
   customerProfile   CustomerProfile @relation(fields: [customerProfileId], references: [id], onDelete: Cascade)
+
+  @@index([customerProfileId])
+  @@index([propertyId])
 }
 
 model AuditLog {
@@ -469,6 +501,8 @@ model AuditLog {
   actor         User?    @relation("ActorAuditLogs", fields: [actorId], references: [id])
 
   @@index([entity, entityId])
+  @@index([actorEmail])
+  @@index([action])
   @@index([createdAt])
 }
 
@@ -480,6 +514,9 @@ model Setting {
   description String?
   isPublic    Boolean  @default(false)
   updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([isPublic])
 }
 
 // ─── Integration Hub Enums ───────────────────────────────────────────────────

@@ -3,7 +3,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { getStaffSeatUsage, getSubscriptionConfig } from "@/lib/features";
+import { getStaffSeatUsage, getSubscriptionConfig, invalidateSeatUsageCache } from "@/lib/features";
 
 const createUserSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required"),
@@ -193,6 +193,7 @@ export async function POST(req: NextRequest) {
       })
       .catch(() => {});
 
+    invalidateSeatUsageCache();
     const seatUsage = await getStaffSeatUsage();
 
     return NextResponse.json({
@@ -287,6 +288,7 @@ export async function PATCH(req: NextRequest) {
       include: { userRoles: { include: { role: true } } },
     });
 
+    invalidateSeatUsageCache();
     const seatUsage = await getStaffSeatUsage();
 
     return NextResponse.json({
