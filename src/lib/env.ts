@@ -8,6 +8,7 @@ const envSchema = z.object({
 
   // ─── Database ─────────────────────────────────────────────────────────────
   DATABASE_URL: z.string().optional().default("postgresql://postgres:postgres@localhost:5432/agency_db"),
+  DIRECT_URL: z.string().optional(),
 
   // ─── Authentication ───────────────────────────────────────────────────────
   JWT_SECRET: z.string().default("change-me-in-production-use-openssl-rand-base64-32"),
@@ -36,6 +37,7 @@ export const env = envSchema.parse({
   NODE_ENV: process.env.NODE_ENV,
   APP_URL: process.env.APP_URL,
   DATABASE_URL: process.env.DATABASE_URL,
+  DIRECT_URL: process.env.DIRECT_URL,
   JWT_SECRET: process.env.JWT_SECRET,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
