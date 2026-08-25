@@ -1,11 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSubscriptionConfig, updateSubscriptionConfig, TIER_PRESETS, SubscriptionTier } from "@/lib/features";
+import {
+  getSubscriptionConfig,
+  updateSubscriptionConfig,
+  TIER_PRESETS,
+  TIER_QUOTAS,
+  SubscriptionTier,
+  getStaffSeatUsage,
+} from "@/lib/features";
 import { getCurrentUser } from "@/lib/auth";
 
 export async function GET() {
   try {
-    const config = await getSubscriptionConfig();
-    return NextResponse.json({ success: true, config, presets: TIER_PRESETS });
+    const [config, seatUsage] = await Promise.all([
+      getSubscriptionConfig(),
+      getStaffSeatUsage(),
+    ]);
+    return NextResponse.json({
+      success: true,
+      config,
+      seatUsage,
+      presets: TIER_PRESETS,
+      quotaPresets: TIER_QUOTAS,
+    });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
@@ -22,11 +38,16 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { tier, clientName, clientStatus, expiryDate, features } = body;
+    const { tier, clientName, clientStatus, expiryDate, features, quotas } = body;
 
     let updatedFeatures = features;
+    let updatedQuotas = quotas;
+
     if (tier && TIER_PRESETS[tier as SubscriptionTier] && !features) {
       updatedFeatures = TIER_PRESETS[tier as SubscriptionTier];
+    }
+    if (tier && TIER_QUOTAS[tier as SubscriptionTier] && !quotas) {
+      updatedQuotas = TIER_QUOTAS[tier as SubscriptionTier];
     }
 
     const updated = await updateSubscriptionConfig({
@@ -35,9 +56,12 @@ export async function POST(req: NextRequest) {
       clientStatus,
       expiryDate,
       features: updatedFeatures,
+      quotas: updatedQuotas,
     });
 
-    return NextResponse.json({ success: true, config: updated });
+    const seatUsage = await getStaffSeatUsage();
+
+    return NextResponse.json({ success: true, config: updated, seatUsage });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
