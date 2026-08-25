@@ -41,15 +41,31 @@ export async function GET() {
 
     const [users, seatUsage, subscription] = await Promise.all([
       prisma.user.findMany({
+        take: 100,
         orderBy: { createdAt: "desc" },
-        include: {
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          phone: true,
+          isActive: true,
+          isEmailVerified: true,
+          lastLoginAt: true,
+          createdAt: true,
           userRoles: {
-            include: {
-              role: true,
+            select: {
+              role: {
+                select: { name: true },
+              },
             },
           },
-          agentProfile: true,
-          customerProfile: true,
+          agentProfile: {
+            select: { id: true },
+          },
+          customerProfile: {
+            select: { id: true },
+          },
         },
       }),
       getStaffSeatUsage(),

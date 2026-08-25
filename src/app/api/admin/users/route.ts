@@ -32,6 +32,7 @@ export async function GET() {
 
     const [staffUsers, seatUsage, subscription] = await Promise.all([
       prisma.user.findMany({
+        take: 100,
         where: {
           userRoles: {
             some: {
@@ -44,11 +45,25 @@ export async function GET() {
           },
         },
         orderBy: { createdAt: "desc" },
-        include: {
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          phone: true,
+          isActive: true,
+          lastLoginAt: true,
+          createdAt: true,
           userRoles: {
-            include: { role: true },
+            select: {
+              role: {
+                select: { name: true },
+              },
+            },
           },
-          agentProfile: true,
+          agentProfile: {
+            select: { id: true },
+          },
         },
       }),
       getStaffSeatUsage(),

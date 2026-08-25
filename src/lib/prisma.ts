@@ -20,7 +20,17 @@ function createPrismaClient(): PrismaClient {
     });
   }
 
-  const adapter = new PrismaNeon({ connectionString });
+  // Cost & Performance Optimized Neon Pool Configuration:
+  // - max: 5 (limits pool connections per serverless container, avoiding connection leaks)
+  // - idleTimeoutMillis: 10000 (releases idle connections quickly so Neon can auto-suspend to 0 compute cost)
+  // - connectionTimeoutMillis: 5000 (fails fast if network times out)
+  const adapter = new PrismaNeon({
+    connectionString,
+    max: 5,
+    idleTimeoutMillis: 10000,
+    connectionTimeoutMillis: 5000,
+  });
+
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" && process.env.DEBUG_PRISMA ? ["query", "error", "warn"] : ["error"],
