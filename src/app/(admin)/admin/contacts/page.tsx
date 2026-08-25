@@ -22,33 +22,19 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { UNIFIED_CONTACTS_DB, ContactSource, ContactType } from "@/lib/contacts/contacts-service";
 
-type ContactSource = "MRI" | "HOMEPASS" | "PROPERTYME" | "GOOGLE" | "MICROSOFT" | "MANUAL";
-type ContactType = "LEAD" | "AGENT" | "CUSTOMER" | "TENANT";
-
-interface UnifiedContact {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  type: ContactType;
-  sources: ContactSource[];
-  status?: string;
-  suburb?: string;
-  lastActivity?: string;
-  matchFlags?: number;
-}
-
-const DEMO_CONTACTS: UnifiedContact[] = [
-  { id: "1", name: "James Carrington", email: "james.carrington@gmail.com", phone: "+61 411 234 567", type: "LEAD", sources: ["MRI", "HOMEPASS"], suburb: "Mosman NSW", lastActivity: "2 hours ago", matchFlags: 0 },
-  { id: "2", name: "Sophia Williams", email: "sophia.w@outlook.com", phone: "+61 421 345 678", type: "LEAD", sources: ["MRI"], suburb: "Cremorne NSW", lastActivity: "Yesterday", matchFlags: 1 },
-  { id: "3", name: "Liam Chen", email: "liam.chen@example.com.au", phone: "+61 400 123 456", type: "TENANT", sources: ["PROPERTYME"], suburb: "Neutral Bay NSW", lastActivity: "3 days ago", matchFlags: 0 },
-  { id: "4", name: "Olivia Martinez", email: "olivia.m@gmail.com", phone: "+61 431 456 789", type: "CUSTOMER", sources: ["MRI", "GOOGLE"], suburb: "Kirribilli NSW", lastActivity: "1 week ago", matchFlags: 0 },
-  { id: "5", name: "Noah Thompson", email: "noah.t@icloud.com", phone: "+61 405 567 890", type: "LEAD", sources: ["HOMEPASS"], suburb: "Manly NSW", lastActivity: "2 weeks ago", matchFlags: 0 },
-  { id: "6", name: "Emma Davies", email: "emma.davies@company.com.au", phone: "+61 412 678 901", type: "LEAD", sources: ["MRI", "MICROSOFT"], suburb: "Balmain NSW", lastActivity: "3 weeks ago", matchFlags: 2 },
-  { id: "7", name: "William Johnson", email: "wjohnson@email.com", phone: "+61 422 789 012", type: "AGENT", sources: ["MRI", "GOOGLE"], suburb: "Sydney CBD", lastActivity: "1 hour ago", matchFlags: 0 },
-  { id: "8", name: "Ava Brown", email: "ava.b@rentals.com", phone: "+61 433 890 123", type: "TENANT", sources: ["PROPERTYME", "MRI"], suburb: "Paddington NSW", lastActivity: "Today", matchFlags: 0 },
-];
+const DEMO_CONTACTS = UNIFIED_CONTACTS_DB.map((c) => ({
+  id: c.id,
+  name: `${c.firstName} ${c.lastName}`,
+  email: c.email,
+  phone: c.mobile ?? c.phone,
+  type: c.type,
+  sources: c.sources,
+  suburb: `${c.suburb} ${c.state ?? "NSW"}`,
+  lastActivity: c.lastActivity ?? "Recent",
+  matchFlags: c.matchFlags ?? 0,
+}));
 
 const SOURCE_CONFIG: Record<ContactSource, { label: string; color: string; bg: string }> = {
   MRI: { label: "MRI", color: "text-emerald-700", bg: "bg-emerald-50 border border-emerald-200" },
