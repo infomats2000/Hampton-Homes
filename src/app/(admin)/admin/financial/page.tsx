@@ -53,14 +53,23 @@ export default function AdminFinancialPage() {
   // Trust Deposit Drawer State
   const [showLogDepositModal, setShowLogDepositModal] = useState(false);
   const [logSuccessMessage, setLogSuccessMessage] = useState<string | null>(null);
-  const [newDeposit, setNewDeposit] = useState({
+  const [newDeposit, setNewDeposit] = useState<{
+    payerName: string;
+    payerRole: "BUYER" | "TENANT" | "VENDOR";
+    propertyAddress: string;
+    amount: string;
+    depositType: "HOLDING_DEPOSIT" | "FULL_DEPOSIT" | "BALANCE_DEPOSIT" | "RENTAL_BOND";
+    paymentMethod: "EFT" | "BANK_CHEQUE" | "TRUST_TRANSFER";
+    bankReference: string;
+    notes: string;
+  }>({
     payerName: "",
-    payerRole: "BUYER" as const,
+    payerRole: "BUYER",
     propertyAddress: "142 Church Street, Parramatta NSW 2150",
     amount: "10000",
-    depositType: "HOLDING_DEPOSIT" as const,
-    paymentMethod: "EFT" as const,
-    bankReference: "EFT-" + Math.floor(100000 + Math.random() * 900000),
+    depositType: "HOLDING_DEPOSIT",
+    paymentMethod: "EFT",
+    bankReference: "EFT-849201",
     notes: "",
   });
 
@@ -700,7 +709,7 @@ export default function AdminFinancialPage() {
                   <label className="text-slate-700 font-bold">Payer Role</label>
                   <select
                     value={newDeposit.payerRole}
-                    onChange={(e) => setNewDeposit({ ...newDeposit, payerRole: e.target.value as any })}
+                    onChange={(e) => setNewDeposit({ ...newDeposit, payerRole: e.target.value as "BUYER" | "TENANT" | "VENDOR" })}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg"
                   >
                     <option value="BUYER">Buyer</option>
@@ -713,7 +722,7 @@ export default function AdminFinancialPage() {
                   <label className="text-slate-700 font-bold">Deposit Type</label>
                   <select
                     value={newDeposit.depositType}
-                    onChange={(e) => setNewDeposit({ ...newDeposit, depositType: e.target.value as any })}
+                    onChange={(e) => setNewDeposit({ ...newDeposit, depositType: e.target.value as "HOLDING_DEPOSIT" | "FULL_DEPOSIT" | "BALANCE_DEPOSIT" | "RENTAL_BOND" })}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg"
                   >
                     <option value="HOLDING_DEPOSIT">Holding Deposit</option>
@@ -740,7 +749,7 @@ export default function AdminFinancialPage() {
                   <label className="text-slate-700 font-bold">Payment Method</label>
                   <select
                     value={newDeposit.paymentMethod}
-                    onChange={(e) => setNewDeposit({ ...newDeposit, paymentMethod: e.target.value as any })}
+                    onChange={(e) => setNewDeposit({ ...newDeposit, paymentMethod: e.target.value as "EFT" | "BANK_CHEQUE" | "TRUST_TRANSFER" })}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg"
                   >
                     <option value="EFT">Electronic Funds Transfer (EFT)</option>

@@ -10,9 +10,10 @@ export async function POST() {
       status: MOCK_XERO_STATUS,
       result,
     });
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to execute Xero sync.";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to execute Xero sync." },
+      { success: false, error: message },
       { status: 500 }
     );
   }

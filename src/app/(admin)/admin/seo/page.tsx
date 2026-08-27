@@ -183,7 +183,7 @@ export default function AdminSEOPage() {
                 <div className="flex gap-2">
                   <select
                     value={newType}
-                    onChange={(e) => setNewType(e.target.value as any)}
+                    onChange={(e) => setNewType(e.target.value as "301" | "302")}
                     className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg font-semibold text-slate-800 focus:outline-none"
                   >
                     <option value="301">301 (Permanent)</option>

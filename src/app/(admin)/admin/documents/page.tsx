@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   FileSignature,
   Plus,
   Search,
-  Clock,
   CheckCircle2,
   Eye,
   Send,
@@ -230,13 +230,13 @@ export default function DocumentsPage() {
             Link your FLK account to send real agreements, track signing status live, and receive webhook notifications.
           </p>
         </div>
-        <a
+        <Link
           href="/admin/integrations/flk"
           className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold transition-colors whitespace-nowrap"
         >
           Configure FLK
           <ChevronRight className="h-4 w-4" />
-        </a>
+        </Link>
       </div>
     </div>
   );

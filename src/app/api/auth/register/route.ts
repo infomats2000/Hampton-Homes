@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
       user: authUser,
       redirectTo: "/customer/dashboard",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Register API error:", error);
     return NextResponse.json(
       { success: false, error: "An error occurred during registration. Please try again." },

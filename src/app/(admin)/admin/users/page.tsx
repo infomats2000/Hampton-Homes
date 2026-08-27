@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Users,
   UserPlus,
@@ -129,7 +129,6 @@ export default function AdminUsersPage() {
   const [deleting, setDeleting] = useState(false);
 
   const fetchStaff = async () => {
-    setLoading(true);
     try {
       const res = await fetch("/api/admin/users");
       const data = await res.json();
@@ -138,8 +137,8 @@ export default function AdminUsersPage() {
         if (data.offices) setOffices(data.offices);
         if (data.seatUsage) setSeatUsage(data.seatUsage);
         if (data.subscriptionTier) setSubscriptionTier(data.subscriptionTier);
-        if (data.offices?.length > 0 && !addOfficeId) {
-          setAddOfficeId(data.offices[0].id);
+        if (data.offices?.length > 0) {
+          setAddOfficeId((prev) => prev || data.offices[0].id);
         }
       }
     } catch (err) {
@@ -150,7 +149,32 @@ export default function AdminUsersPage() {
   };
 
   useEffect(() => {
-    fetchStaff();
+    let isMounted = true;
+    async function initStaff() {
+      try {
+        const res = await fetch("/api/admin/users");
+        const data = await res.json();
+        if (data.success && isMounted) {
+          setUsers(data.users);
+          if (data.offices) setOffices(data.offices);
+          if (data.seatUsage) setSeatUsage(data.seatUsage);
+          if (data.subscriptionTier) setSubscriptionTier(data.subscriptionTier);
+          if (data.offices?.length > 0) {
+            setAddOfficeId((prev) => prev || data.offices[0].id);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load staff:", err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+    initStaff();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const openEditModal = (user: StaffUser) => {

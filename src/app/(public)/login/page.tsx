@@ -99,7 +99,7 @@ function LoginForm() {
         router.push(destination);
         router.refresh();
       }, 500);
-    } catch (err: any) {
+    } catch {
       setError("A network error occurred. Please check your connection.");
       setLoading(false);
     }

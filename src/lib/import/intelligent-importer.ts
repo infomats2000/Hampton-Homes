@@ -70,7 +70,7 @@ export interface ColumnMappingResult {
 
 export interface ValidatedImportRecord {
   rowIndex: number;
-  data: Record<string, any>;
+  data: Record<string, string>;
   isValid: boolean;
   warnings: string[];
   errors: string[];
@@ -142,7 +142,7 @@ export function validateAndSanitizeRows(
   const schema = ENTITY_SCHEMAS[targetEntity];
 
   return rows.map((rawRow, idx) => {
-    const recordData: Record<string, any> = {};
+    const recordData: Record<string, string> = {};
     const warnings: string[] = [];
     const errors: string[] = [];
 

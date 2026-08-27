@@ -55,11 +55,19 @@ export default function AdminPropertyManagementPage() {
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
 
   // New Work Order Form State
-  const [newWo, setNewWo] = useState({
+  const [newWo, setNewWo] = useState<{
+    title: string;
+    description: string;
+    category: "PLUMBING" | "ELECTRICAL" | "LOCKSMITH" | "BUILDING" | "APPLIANCE";
+    priority: "ROUTINE" | "HIGH" | "EMERGENCY";
+    contractorName: string;
+    contractorEmail: string;
+    authorizedCostLimit: string;
+  }>({
     title: "",
     description: "",
-    category: "PLUMBING" as const,
-    priority: "ROUTINE" as const,
+    category: "PLUMBING",
+    priority: "ROUTINE",
     contractorName: "Manly Plumbing Services",
     contractorEmail: "jobs@manlyplumbing.example.com.au",
     authorizedCostLimit: "500",
@@ -690,7 +698,7 @@ export default function AdminPropertyManagementPage() {
                   <label className="text-slate-700 font-bold">Category</label>
                   <select
                     value={newWo.category}
-                    onChange={(e) => setNewWo({ ...newWo, category: e.target.value as any })}
+                    onChange={(e) => setNewWo({ ...newWo, category: e.target.value as "PLUMBING" | "ELECTRICAL" | "LOCKSMITH" | "BUILDING" | "APPLIANCE" })}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg"
                   >
                     <option value="PLUMBING">Plumbing</option>
@@ -705,7 +713,7 @@ export default function AdminPropertyManagementPage() {
                   <label className="text-slate-700 font-bold">Priority</label>
                   <select
                     value={newWo.priority}
-                    onChange={(e) => setNewWo({ ...newWo, priority: e.target.value as any })}
+                    onChange={(e) => setNewWo({ ...newWo, priority: e.target.value as "ROUTINE" | "HIGH" | "EMERGENCY" })}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg"
                   >
                     <option value="ROUTINE">Routine</option>

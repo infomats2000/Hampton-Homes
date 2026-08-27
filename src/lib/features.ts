@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "./prisma";
 import { RoleType } from "./permissions";
 import { cache } from "./cache";
@@ -225,13 +226,13 @@ export async function updateSubscriptionConfig(
     where: { key: SUBSCRIPTION_SETTING_KEY },
     create: {
       key: SUBSCRIPTION_SETTING_KEY,
-      value: updated as any,
+      value: updated as unknown as Prisma.InputJsonValue,
       category: "SYSTEM",
       description: "Platform subscription tier, quotas, and granular module feature flags",
       isPublic: true,
     },
     update: {
-      value: updated as any,
+      value: updated as unknown as Prisma.InputJsonValue,
     },
   });
 

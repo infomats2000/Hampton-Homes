@@ -126,7 +126,7 @@ export default function CustomerSavedSearchesPage() {
                   <span className="font-semibold text-slate-700">Notification Frequency:</span>
                   <select
                     value={s.frequency}
-                    onChange={(e) => updateFrequency(s.id, e.target.value as any)}
+                    onChange={(e) => updateFrequency(s.id, e.target.value as "IMMEDIATELY" | "DAILY" | "WEEKLY")}
                     className="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-md font-semibold text-slate-800 focus:outline-none"
                   >
                     <option value="IMMEDIATELY">Immediately on Sync</option>

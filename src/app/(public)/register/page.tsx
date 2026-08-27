@@ -63,7 +63,7 @@ export default function RegisterPage() {
 
       router.push("/customer/dashboard");
       router.refresh();
-    } catch (err: any) {
+    } catch {
       setError("A network error occurred. Please try again.");
       setLoading(false);
     }

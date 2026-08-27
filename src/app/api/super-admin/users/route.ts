@@ -93,9 +93,10 @@ export async function GET() {
       seatUsage,
       subscription,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Super Admin GET users error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -224,9 +225,10 @@ export async function POST(req: NextRequest) {
       },
       seatUsage,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Super Admin POST user error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -269,7 +271,7 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (typeof isActive === "boolean") {
       updateData.isActive = isActive;
     }
@@ -319,8 +321,9 @@ export async function PATCH(req: NextRequest) {
       },
       seatUsage,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Super Admin PATCH user error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

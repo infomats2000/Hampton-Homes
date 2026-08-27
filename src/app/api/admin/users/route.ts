@@ -148,9 +148,10 @@ export async function GET() {
       subscriptionTier: subscription.tier,
       maxStaffUsers: subscription.quotas.maxStaffUsers,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Admin GET staff error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -302,9 +303,10 @@ export async function POST(req: NextRequest) {
       },
       seatUsage: updatedSeatUsage,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Admin POST staff error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -377,7 +379,7 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const userUpdateData: any = {};
+    const userUpdateData: Record<string, unknown> = {};
     if (firstName) userUpdateData.firstName = firstName;
     if (lastName) userUpdateData.lastName = lastName;
     if (email) userUpdateData.email = email.toLowerCase();
@@ -457,9 +459,10 @@ export async function PATCH(req: NextRequest) {
       },
       seatUsage,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Admin PATCH staff error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -517,8 +520,9 @@ export async function DELETE(req: NextRequest) {
       message: "Staff member deleted successfully",
       seatUsage,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Admin DELETE staff error:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

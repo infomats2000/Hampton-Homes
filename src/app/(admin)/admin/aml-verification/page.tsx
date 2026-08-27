@@ -288,7 +288,7 @@ export default function AMLVerificationPage() {
                   <select
                     id="aml-role"
                     value={formRole}
-                    onChange={e => setFormRole(e.target.value as any)}
+                    onChange={e => setFormRole(e.target.value as AMLCustomerVerification["role"])}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg"
                   >
                     <option value="BUYER">Buyer</option>
@@ -303,7 +303,7 @@ export default function AMLVerificationPage() {
                   <select
                     id="aml-doctype"
                     value={formDocType}
-                    onChange={e => setFormDocType(e.target.value as any)}
+                    onChange={e => setFormDocType(e.target.value as AMLCustomerVerification["idDocumentType"])}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg"
                   >
                     <option value="AU_DRIVER_LICENCE">AU Driver Licence</option>

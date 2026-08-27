@@ -3,6 +3,7 @@ dotenv.config({ path: ".env.local" });
 dotenv.config();
 
 import bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../src/lib/prisma";
 import { PERMISSIONS, ROLE_DEFAULT_PERMISSIONS, RoleType } from "../src/lib/permissions";
 import { DEFAULT_SUBSCRIPTION } from "../src/lib/features";
@@ -14,17 +15,17 @@ async function main() {
   console.log("Creating permissions...");
   const permissionEntries = Object.entries(PERMISSIONS);
   for (const [key, code] of permissionEntries) {
-    const module = code.split(".")[0] || "general";
+    const moduleCategory = code.split(".")[0] || "general";
     await prisma.permission.upsert({
       where: { code },
       update: {
         name: key.replace(/_/g, " "),
-        module,
+        module: moduleCategory,
       },
       create: {
         code,
         name: key.replace(/_/g, " "),
-        module,
+        module: moduleCategory,
         description: `Permission for ${code}`,
       },
     });
@@ -280,7 +281,7 @@ async function main() {
     update: {},
     create: {
       key: "system.subscription",
-      value: DEFAULT_SUBSCRIPTION as any,
+      value: DEFAULT_SUBSCRIPTION as unknown as Prisma.InputJsonValue,
       category: "SYSTEM",
       description: "Platform subscription tier and granular module feature flags",
       isPublic: true,

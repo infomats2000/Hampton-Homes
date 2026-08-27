@@ -22,8 +22,9 @@ export async function GET() {
       presets: TIER_PRESETS,
       quotaPresets: TIER_QUOTAS,
     });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -62,7 +63,8 @@ export async function POST(req: NextRequest) {
     const seatUsage = await getStaffSeatUsage();
 
     return NextResponse.json({ success: true, config: updated, seatUsage });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
       user: authUser,
       redirectTo,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Login API error:", error);
     return NextResponse.json(
       { success: false, error: "An unexpected error occurred. Please try again." },

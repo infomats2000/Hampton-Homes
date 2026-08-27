@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   TrendingUp,
   Search,
@@ -220,13 +221,13 @@ export default function PropertyIntelligencePage() {
 
           <div className="bg-white border border-slate-200 rounded-2xl p-4 text-center shadow-xs">
             <p className="text-xs text-slate-500 mb-2 font-medium">Lookup a new property from CoreLogic</p>
-            <a
+            <Link
               href="/admin/integrations/corelogic"
               className="text-xs text-sky-700 font-bold hover:underline flex items-center justify-center gap-1"
             >
               Configure CoreLogic API
               <ChevronRight className="h-3 w-3" />
-            </a>
+            </Link>
           </div>
         </div>
 

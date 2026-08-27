@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -231,7 +231,6 @@ export default function SuperAdminPage() {
 
   // Fetch users when tab changes or on mount
   const fetchUsers = async () => {
-    setLoadingUsers(true);
     try {
       const res = await fetch("/api/super-admin/users");
       const data = await res.json();
@@ -249,9 +248,30 @@ export default function SuperAdminPage() {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchUsers();
+    if (!isAuthenticated) return;
+    let isMounted = true;
+    async function loadUsers() {
+      try {
+        const res = await fetch("/api/super-admin/users");
+        const data = await res.json();
+        if (data.success && isMounted) {
+          setUsers(data.users);
+          if (data.seatUsage) {
+            setSeatUsage(data.seatUsage);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+      } finally {
+        if (isMounted) {
+          setLoadingUsers(false);
+        }
+      }
     }
+    loadUsers();
+    return () => {
+      isMounted = false;
+    };
   }, [isAuthenticated, activeTab]);
 
   const handleUnlock = (e: React.FormEvent) => {
@@ -375,7 +395,7 @@ export default function SuperAdminPage() {
       } else {
         setModalError(data.error || "Failed to create user");
       }
-    } catch (err: any) {
+    } catch {
       setModalError("Server connection error");
     } finally {
       setCreatingUser(false);
@@ -848,7 +868,7 @@ NEXT_PUBLIC_FEATURE_DOCUMENTS=${features.digitalDocuments}`;
                   <label className="text-[11px] font-semibold text-slate-400 block mb-1">Subscription Status</label>
                   <select
                     value={clientStatus}
-                    onChange={(e) => setClientStatus(e.target.value as any)}
+                    onChange={(e) => setClientStatus(e.target.value as "ACTIVE" | "TRIAL" | "SUSPENDED")}
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white"
                   >
                     <option value="ACTIVE">ACTIVE (Full Service)</option>

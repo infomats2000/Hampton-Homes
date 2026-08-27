@@ -10,7 +10,7 @@ interface CacheEntry<T> {
 }
 
 class MemoryCache {
-  private store = new Map<string, CacheEntry<any>>();
+  private store = new Map<string, CacheEntry<unknown>>();
 
   /**
    * Retrieves an item from cache if it exists and hasn't expired.

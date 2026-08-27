@@ -246,7 +246,7 @@ export default function AdminLeadsPage() {
                   <label className="text-slate-700 font-bold block">Update Pipeline Status</label>
                   <select
                     value={selectedLead.status}
-                    onChange={(e) => updateLeadStatus(selectedLead.id, e.target.value as any)}
+                    onChange={(e) => updateLeadStatus(selectedLead.id, e.target.value as LeadItem["status"])}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none"
                   >
                     <option value="NEW">New Lead</option>
