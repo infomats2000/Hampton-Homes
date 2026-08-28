@@ -1,9 +1,10 @@
 import { MetadataRoute } from "next";
-import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
-import { MOCK_AGENTS, MOCK_OFFICES } from "@/lib/properties/service";
+import { MOCK_AGENTS } from "@/lib/properties/service";
+import { getPublishedProperties } from "@/lib/properties/database-service";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.APP_URL || "https://infomats.com.au";
+  const properties = await getPublishedProperties();
 
   const staticPages: MetadataRoute.Sitemap = [
     "",
@@ -28,7 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === "" ? 1.0 : 0.8,
   }));
 
-  const propertyPages: MetadataRoute.Sitemap = MOCK_AUSTRALIAN_PROPERTIES.map((p) => ({
+  const propertyPages: MetadataRoute.Sitemap = properties.map((p) => ({
     url: `${baseUrl}/property/${p.externalId}`,
     lastModified: new Date(p.updatedAt),
     changeFrequency: "hourly",

@@ -26,11 +26,16 @@ function verifyFlkSignature(body: string, signature: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  if (!FLK_WEBHOOK_SECRET) {
+    console.error("[FLK Webhook] FLK_WEBHOOK_SECRET is not configured");
+    return NextResponse.json({ error: "Webhook is not configured" }, { status: 503 });
+  }
+
   const body = await request.text();
   const signature = request.headers.get("x-flk-signature") ?? "";
 
   const signatureValid = verifyFlkSignature(body, signature);
-  if (!signatureValid && FLK_WEBHOOK_SECRET) {
+  if (!signatureValid) {
     console.warn("[FLK Webhook] Invalid signature received");
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }

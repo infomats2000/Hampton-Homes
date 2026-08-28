@@ -25,7 +25,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
 import { MRIRawProperty } from "@/lib/mri/provider.interface";
 import { SafeImage } from "@/components/ui/safe-image";
 
@@ -33,9 +32,10 @@ export interface SearchPortalProps {
   defaultListingType?: "RESIDENTIAL_SALE" | "RESIDENTIAL_RENT" | "COMMERCIAL_SALE" | "PROJECT";
   title: string;
   subtitle: string;
+  properties: MRIRawProperty[];
 }
 
-export function SearchPortal({ defaultListingType = "RESIDENTIAL_SALE", title, subtitle }: SearchPortalProps) {
+export function SearchPortal({ defaultListingType = "RESIDENTIAL_SALE", title, subtitle, properties }: SearchPortalProps) {
   // State
   const [searchTerm, setSearchTerm] = useState("");
   const [propertyType, setPropertyType] = useState<string>("");
@@ -51,7 +51,7 @@ export function SearchPortal({ defaultListingType = "RESIDENTIAL_SALE", title, s
 
   // Filter & Sort Logic
   const filteredProperties = useMemo(() => {
-    return MOCK_AUSTRALIAN_PROPERTIES.filter((p) => {
+    return properties.filter((p) => {
       // Listing type match
       if (defaultListingType === "RESIDENTIAL_SALE" && p.listingType !== "RESIDENTIAL_SALE") {
         if (p.status === "SOLD") return true; // Include sold properties
@@ -93,7 +93,7 @@ export function SearchPortal({ defaultListingType = "RESIDENTIAL_SALE", title, s
       if (sortBy === "suburb") return a.suburb.localeCompare(b.suburb);
       return 0; // Default newest
     });
-  }, [searchTerm, propertyType, minBeds, minBaths, minCars, minPrice, maxPrice, sortBy, defaultListingType]);
+  }, [properties, searchTerm, propertyType, minBeds, minBaths, minCars, minPrice, maxPrice, sortBy, defaultListingType]);
 
   const activeFilterCount = [searchTerm, propertyType, minPrice, maxPrice, minBeds, minBaths, minCars].filter(Boolean).length;
 

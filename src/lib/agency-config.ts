@@ -3,7 +3,7 @@
  *
  * All agency-specific branding, contact details, licensing, and feature flags
  * are read from environment variables. To deploy a new client instance, simply
- * fill in their details in .env.local (or Vercel Environment Variables).
+ * fill in their details in .env.local (or Cloud Run environment variables).
  *
  * This is the SINGLE source of truth. Never hardcode agency details in components.
  */

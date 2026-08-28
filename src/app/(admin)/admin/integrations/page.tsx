@@ -371,7 +371,7 @@ export default function IntegrationsPage() {
         </CardContent>
       </Card>
       <p className="mt-4 text-[11px] text-slate-500 font-medium">
-        All webhooks verify HMAC-SHA256 signatures. Set environment variables in your Vercel dashboard.
+        All webhooks verify HMAC-SHA256 signatures. Store webhook secrets in Google Secret Manager.
         Export endpoints: <code className="text-slate-700 font-mono">/api/contacts/[id]/vcard</code> ·{" "}
         <code className="text-slate-700 font-mono">/api/appointments/[id]/ics</code>
       </p>

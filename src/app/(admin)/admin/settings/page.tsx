@@ -372,7 +372,7 @@ NEXT_PUBLIC_FEATURE_DOCUMENTS=${s.featureDocuments}`;
       <SectionHeader
         icon={FileCode2}
         title=".env Export"
-        description="Copy these values into your .env.local file or Vercel Environment Variables to apply all settings."
+        description="Copy these values into .env.local for development or Cloud Run environment variables for production."
         color="text-violet-500"
       />
       <CardContent>
@@ -391,7 +391,7 @@ NEXT_PUBLIC_FEATURE_DOCUMENTS=${s.featureDocuments}`;
         <div className="mt-3 flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800">
           <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-amber-500" />
           <p className="text-[10px] font-medium leading-relaxed">
-            Changes here are reflected live in this preview only. To apply them to the running app, copy the env vars above into your <strong>.env.local</strong> and restart the dev server — or update your <strong>Vercel Environment Variables</strong> and trigger a redeploy.
+            Changes here are reflected live in this preview only. For development, update <strong>.env.local</strong> and restart the server. For production, update <strong>Cloud Run environment variables</strong> or <strong>Secret Manager</strong>, then deploy a new revision.
           </p>
         </div>
       </CardContent>

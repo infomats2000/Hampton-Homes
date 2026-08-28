@@ -1,22 +1,15 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { Building2, Search, Filter, ShieldCheck, Eye, RefreshCw, Star, Edit, ExternalLink, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
+import { getAllProperties } from "@/lib/properties/database-service";
 
-export default function AdminPropertiesPage() {
-  const [searchTerm, setSearchTerm] = useState("");
+export const dynamic = "force-dynamic";
 
-  const filteredProperties = MOCK_AUSTRALIAN_PROPERTIES.filter(
-    (p) =>
-      p.streetName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.suburb.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.externalId.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+export default async function AdminPropertiesPage() {
+  const filteredProperties = await getAllProperties();
 
   return (
     <div className="space-y-8">
@@ -50,8 +43,7 @@ export default function AdminPropertiesPage() {
               <input
                 type="text"
                 placeholder="Search address, suburb, or MRI ID..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                name="search"
                 className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#0a192f]"
               />
             </div>
@@ -91,6 +83,9 @@ export default function AdminPropertiesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium">
+                {filteredProperties.length === 0 && (
+                  <tr><td colSpan={9} className="px-4 py-12 text-center text-slate-500">No properties are stored yet. Add a listing through the property API or connect an MRI provider.</td></tr>
+                )}
                 {filteredProperties.map((prop) => (
                   <tr key={prop.externalId} className="hover:bg-slate-50/80 transition-colors">
                     <td className="py-3.5 px-4 flex items-center gap-3">

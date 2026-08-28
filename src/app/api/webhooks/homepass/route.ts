@@ -26,11 +26,16 @@ function verifyHomepassSignature(body: string, signature: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  if (!HOMEPASS_WEBHOOK_SECRET) {
+    console.error("[Homepass Webhook] HOMEPASS_WEBHOOK_SECRET is not configured");
+    return NextResponse.json({ error: "Webhook is not configured" }, { status: 503 });
+  }
+
   const body = await request.text();
   const signature = request.headers.get("x-homepass-signature") ?? "";
 
   const signatureValid = verifyHomepassSignature(body, signature);
-  if (!signatureValid && HOMEPASS_WEBHOOK_SECRET) {
+  if (!signatureValid) {
     console.warn("[Homepass Webhook] Invalid signature received");
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }

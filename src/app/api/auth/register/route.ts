@@ -3,17 +3,34 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { createSessionToken, setSessionCookie, buildAuthUser } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const registerSchema = z.object({
   firstName: z.string().trim().min(2, "First name must be at least 2 characters"),
   lastName: z.string().trim().min(2, "Last name must be at least 2 characters"),
   email: z.string().trim().email("Please enter a valid email address"),
   phone: z.string().trim().optional(),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
+  password: z.string()
+    .min(12, "Password must be at least 12 characters long")
+    .regex(/[a-z]/, "Password must include a lowercase letter")
+    .regex(/[A-Z]/, "Password must include an uppercase letter")
+    .regex(/[0-9]/, "Password must include a number")
+    .regex(/[^A-Za-z0-9]/, "Password must include a special character"),
 });
 
 export async function POST(req: NextRequest) {
   try {
+    const rateLimit = checkRateLimit(req, "auth:register", 5, 60 * 60 * 1000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { success: false, error: "Too many registration attempts. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+        },
+      );
+    }
+
     const body = await req.json();
     const parsed = registerSchema.safeParse(body);
 

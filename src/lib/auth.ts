@@ -2,14 +2,10 @@ import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { RoleType, PermissionCode, ROLE_DEFAULT_PERMISSIONS, AuthUser } from "./permissions";
-import { prisma } from "./prisma";
+import { getJwtKey } from "./jwt";
 
 const SALT_ROUNDS = 10;
 export const AUTH_COOKIE_NAME = "auth_session";
-
-// Secret for JWT Signing
-const JWT_SECRET_STRING = process.env.JWT_SECRET || "hampton-homes-secure-jwt-key-australia-2026";
-const JWT_KEY = new TextEncoder().encode(JWT_SECRET_STRING);
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, SALT_ROUNDS);
@@ -36,7 +32,7 @@ export async function createSessionToken(payload: SessionPayload): Promise<strin
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(JWT_KEY);
+    .sign(getJwtKey());
 }
 
 /**
@@ -44,7 +40,7 @@ export async function createSessionToken(payload: SessionPayload): Promise<strin
  */
 export async function verifySessionToken(token: string): Promise<SessionPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, JWT_KEY, {
+    const { payload } = await jwtVerify(token, getJwtKey(), {
       algorithms: ["HS256"],
     });
     return payload as unknown as SessionPayload;

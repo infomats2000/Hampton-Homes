@@ -1,35 +1,38 @@
-import { neonConfig } from "@neondatabase/serverless";
-import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
-import ws from "ws";
-
-// Set up WebSocket constructor in Node.js environments (outside Vercel Edge runtime)
-if (typeof window === "undefined" && !process.env.VERCEL) {
-  neonConfig.webSocketConstructor = ws;
-}
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+
+function createPostgresAdapter(connectionString: string): PrismaPg {
+  const url = new URL(connectionString);
+
+  // DigitalOcean Managed PostgreSQL uses TLS with a managed CA chain. The pg
+  // driver otherwise treats sslmode=require as verify-full and rejects it.
+  url.searchParams.delete("sslmode");
+  url.searchParams.delete("uselibpqcompat");
+
+  return new PrismaPg({
+    connectionString: url.toString(),
+    ssl: { rejectUnauthorized: false },
+    max: 5,
+    idleTimeoutMillis: 10000,
+    connectionTimeoutMillis: 5000,
+  });
+}
 
 function createPrismaClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     return new PrismaClient({
-      adapter: new PrismaNeon({
-        connectionString: "postgresql://postgres:postgres@localhost:5432/placeholder",
-      }),
+      adapter: createPostgresAdapter("postgresql://postgres:postgres@localhost:5432/placeholder"),
     });
   }
 
-  // Cost & Performance Optimized Neon Pool Configuration:
+  // Cost & Performance Optimized PostgreSQL Pool Configuration:
   // - max: 5 (limits pool connections per serverless container, avoiding connection leaks)
   // - idleTimeoutMillis: 10000 (releases idle connections quickly so Neon can auto-suspend to 0 compute cost)
   // - connectionTimeoutMillis: 5000 (fails fast if network times out)
-  const adapter = new PrismaNeon({
-    connectionString,
-    max: 5,
-    idleTimeoutMillis: 10000,
-    connectionTimeoutMillis: 5000,
-  });
+  const adapter = createPostgresAdapter(connectionString);
 
   return new PrismaClient({
     adapter,

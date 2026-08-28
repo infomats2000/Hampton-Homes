@@ -23,11 +23,16 @@ function verifyPropertyMeSignature(body: string, signature: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  if (!PROPERTYME_WEBHOOK_SECRET) {
+    console.error("[PropertyMe Webhook] PROPERTYME_WEBHOOK_SECRET is not configured");
+    return NextResponse.json({ error: "Webhook is not configured" }, { status: 503 });
+  }
+
   const body = await request.text();
   const signature = request.headers.get("x-propertyme-signature") ?? "";
 
   const signatureValid = verifyPropertyMeSignature(body, signature);
-  if (!signatureValid && PROPERTYME_WEBHOOK_SECRET) {
+  if (!signatureValid) {
     console.warn("[PropertyMe Webhook] Invalid signature received");
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }

@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { createSessionToken, setSessionCookie, buildAuthUser } from "@/lib/auth";
 import { RoleType } from "@/lib/permissions";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const loginSchema = z.object({
   email: z.string().trim().email("Please enter a valid email address"),
@@ -12,6 +13,17 @@ const loginSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const rateLimit = checkRateLimit(req, "auth:login", 10, 15 * 60 * 1000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { success: false, error: "Too many login attempts. Please try again later." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+        },
+      );
+    }
+
     const body = await req.json();
     const parsed = loginSchema.safeParse(body);
 
@@ -25,7 +37,7 @@ export async function POST(req: NextRequest) {
     const email = parsed.data.email.toLowerCase();
     const password = parsed.data.password;
 
-    // Look up user in Neon PostgreSQL
+    // Look up user in DigitalOcean PostgreSQL
     const user = await prisma.user.findUnique({
       where: { email },
       include: {

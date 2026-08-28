@@ -4,13 +4,16 @@ import { Search, MapPin, Bed, Bath, Car, ArrowRight, ShieldCheck, Sparkles, Buil
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
+import { getPublishedProperties } from "@/lib/properties/database-service";
 import { AGENCY_NAME, AGENCY_TAGLINE } from "@/lib/agency-config";
 import { SafeImage } from "@/components/ui/safe-image";
 import { PublicTestimonialsSection } from "@/components/public/testimonials-section";
 
-export default function HomePage() {
-  const featuredProperties = MOCK_AUSTRALIAN_PROPERTIES.slice(0, 3);
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  let featuredProperties = await getPublishedProperties({ featuredOnly: true, limit: 3 });
+  if (featuredProperties.length === 0) featuredProperties = await getPublishedProperties({ limit: 3 });
 
   return (
     <div className="space-y-12 sm:space-y-20 pb-16 sm:pb-20 overflow-x-hidden">
