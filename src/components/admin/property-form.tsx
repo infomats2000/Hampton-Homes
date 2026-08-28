@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Archive, ArrowLeft, CheckCircle2, Save } from "lucide-react";
+import { Archive, ArrowDown, ArrowLeft, ArrowUp, CheckCircle2, Save, Star, Upload, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,10 +30,44 @@ export function PropertyForm({ listingId, initialValues, mriManaged = false }: {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [removedStorageUrls, setRemovedStorageUrls] = useState<string[]>([]);
+  const [uploadedThisSession, setUploadedThisSession] = useState<string[]>([]);
 
   const set = (name: keyof FormValues, value: string | number | boolean) => setValues((current) => ({ ...current, [name]: value }));
   const inputClass = "w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0a192f] disabled:cursor-not-allowed disabled:opacity-60";
   const labelClass = "space-y-1 text-xs font-semibold text-slate-700";
+  const photoUrls = values.photosText.split(/\r?\n/).map((url) => url.trim()).filter(Boolean);
+
+  function setPhotoUrls(urls: string[]) { set("photosText", urls.join("\n")); }
+
+  async function uploadImages(files: FileList | null) {
+    if (!files?.length) return;
+    setUploading(true); setError("");
+    const added: string[] = [];
+    for (const file of Array.from(files)) {
+      const data = new FormData(); data.set("file", file);
+      const response = await fetch("/api/admin/uploads/property-images", { method: "POST", body: data });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) { setError(`${file.name}: ${result.error ?? "Upload failed"}`); break; }
+      added.push(result.url);
+    }
+    if (added.length) { setPhotoUrls([...photoUrls, ...added]); setUploadedThisSession((current) => [...current, ...added]); }
+    setUploading(false);
+  }
+
+  async function removePhoto(url: string) {
+    setPhotoUrls(photoUrls.filter((item) => item !== url));
+    if (uploadedThisSession.includes(url)) {
+      await fetch("/api/admin/uploads/property-images", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url }) });
+      setUploadedThisSession((current) => current.filter((item) => item !== url));
+    } else if (url.includes("storage.googleapis.com/")) setRemovedStorageUrls((current) => [...current, url]);
+  }
+
+  function movePhoto(index: number, direction: -1 | 1) {
+    const target = index + direction; if (target < 0 || target >= photoUrls.length) return;
+    const next = [...photoUrls]; [next[index], next[target]] = [next[target], next[index]]; setPhotoUrls(next);
+  }
 
   async function submit(event: React.FormEvent) {
     event.preventDefault(); setSaving(true); setError(""); setMessage("");
@@ -45,6 +79,8 @@ export function PropertyForm({ listingId, initialValues, mriManaged = false }: {
     const result = await response.json().catch(() => ({}));
     setSaving(false);
     if (!response.ok) { setError(result.error ?? "Unable to save the property"); return; }
+    await Promise.allSettled(removedStorageUrls.map((url) => fetch("/api/admin/uploads/property-images", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url }) })));
+    setRemovedStorageUrls([]); setUploadedThisSession([]);
     setMessage("Property saved successfully.");
     if (!listingId) router.push(`/admin/properties/${result.id}`);
     router.refresh();
@@ -69,7 +105,7 @@ export function PropertyForm({ listingId, initialValues, mriManaged = false }: {
         </div>
         <div className="flex gap-2">
           {listingId && <Button type="button" variant="outline" onClick={archive} disabled={saving} className="gap-2 text-rose-700"><Archive className="h-4 w-4" />Archive</Button>}
-          <Button type="submit" variant="gold" disabled={saving} className="gap-2"><Save className="h-4 w-4" />{saving ? "Saving…" : "Save Property"}</Button>
+          <Button type="submit" variant="gold" disabled={saving || uploading} className="gap-2"><Save className="h-4 w-4" />{saving ? "Saving…" : "Save Property"}</Button>
         </div>
       </div>
 
@@ -100,7 +136,11 @@ export function PropertyForm({ listingId, initialValues, mriManaged = false }: {
             <label className={labelClass}>Displayed price<input required className={inputClass} value={values.priceDisplay} onChange={(e) => set("priceDisplay", e.target.value)} /></label>
             <label className={labelClass}>Numeric price<input type="number" min="0" className={inputClass} value={values.priceNumeric ?? ""} onChange={(e) => set("priceNumeric", Number(e.target.value))} /></label>
             <label className={`${labelClass} sm:col-span-2`}>Description<textarea required rows={9} className={inputClass} value={values.description} onChange={(e) => set("description", e.target.value)} /></label>
-            <label className={`${labelClass} sm:col-span-2`}>Photo URLs <span className="font-normal text-slate-400">(one URL per line)</span><textarea rows={5} className={inputClass} value={values.photosText} onChange={(e) => set("photosText", e.target.value)} placeholder="https://…" /></label>
+            <div className="space-y-3 sm:col-span-2">
+              <div className="flex flex-wrap items-center justify-between gap-2"><div><p className="text-xs font-semibold text-slate-700">Property photos</p><p className="text-[11px] text-slate-500">JPEG, PNG or WebP · maximum 10 MB each. The first image is primary.</p></div><label className="cursor-pointer"><input type="file" multiple accept="image/jpeg,image/png,image/webp" className="hidden" disabled={uploading} onChange={(e) => uploadImages(e.target.files)} /><span className="inline-flex items-center gap-2 rounded-lg bg-[#0a192f] px-4 py-2 text-xs font-semibold text-white"><Upload className="h-4 w-4" />{uploading ? "Uploading…" : "Upload images"}</span></label></div>
+              {photoUrls.length > 0 ? <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{photoUrls.map((url, index) => <div key={url} className="overflow-hidden rounded-xl border bg-white"><div className="relative aspect-4/3 bg-slate-100"><img src={url} alt={`Property photo ${index + 1}`} className="h-full w-full object-cover" />{index === 0 && <span className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-amber-400 px-2 py-1 text-[10px] font-bold text-slate-900"><Star className="h-3 w-3" />Primary</span>}</div><div className="flex items-center justify-between p-2"><span className="text-[10px] text-slate-500">Photo {index + 1}</span><div className="flex gap-1"><button type="button" aria-label="Move photo up" disabled={index === 0} onClick={() => movePhoto(index, -1)} className="rounded p-1 hover:bg-slate-100 disabled:opacity-30"><ArrowUp className="h-4 w-4" /></button><button type="button" aria-label="Move photo down" disabled={index === photoUrls.length - 1} onClick={() => movePhoto(index, 1)} className="rounded p-1 hover:bg-slate-100 disabled:opacity-30"><ArrowDown className="h-4 w-4" /></button><button type="button" aria-label="Remove photo" onClick={() => removePhoto(url)} className="rounded p-1 text-rose-600 hover:bg-rose-50"><X className="h-4 w-4" /></button></div></div></div>)}</div> : <div className="rounded-xl border border-dashed p-8 text-center text-xs text-slate-500">No photos uploaded yet.</div>}
+              <details><summary className="cursor-pointer text-[11px] text-slate-500">Add an external image URL</summary><textarea rows={3} className={`${inputClass} mt-2`} value={values.photosText} onChange={(e) => set("photosText", e.target.value)} placeholder="One https:// URL per line" /></details>
+            </div>
           </CardContent></Card>
         </div>
 
