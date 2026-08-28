@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Building2, Search, Filter, ShieldCheck, Eye, RefreshCw, Star, Edit, ExternalLink, CheckCircle2 } from "lucide-react";
+import { Building2, Search, Filter, ShieldCheck, Eye, RefreshCw, Star, Edit, ExternalLink, CheckCircle2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -25,6 +25,9 @@ export default async function AdminPropertiesPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <Link href="/admin/properties/new">
+            <Button variant="gold" size="sm" className="gap-2 text-xs"><Plus className="h-3.5 w-3.5" />Add Property</Button>
+          </Link>
           <Link href="/admin/mri">
             <Button variant="outline" size="sm" className="gap-2 text-xs">
               <RefreshCw className="h-3.5 w-3.5" />
@@ -136,9 +139,7 @@ export default async function AdminPropertiesPage() {
                         <Button variant="ghost" size="icon" title="Featured Property Toggle">
                           <Star className="h-4 w-4 text-amber-500" />
                         </Button>
-                        <Button variant="ghost" size="icon" title="Edit Website Overrides">
-                          <Edit className="h-4 w-4 text-slate-600" />
-                        </Button>
+                        <Link href={`/admin/properties/${prop.externalId}`}><Button variant="ghost" size="icon" title="Edit Property"><Edit className="h-4 w-4 text-slate-600" /></Button></Link>
                       </div>
                     </td>
                   </tr>
