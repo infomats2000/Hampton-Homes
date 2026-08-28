@@ -2,6 +2,8 @@ import { MetadataRoute } from "next";
 import { MOCK_AGENTS } from "@/lib/properties/service";
 import { getPublishedProperties } from "@/lib/properties/database-service";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.APP_URL || "https://infomats.com.au";
   const properties = await getPublishedProperties();
