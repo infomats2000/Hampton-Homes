@@ -39,6 +39,7 @@ export async function proxy(request: NextRequest) {
   const isPublicApi =
     pathname === "/api/auth/login" ||
     pathname === "/api/auth/register" ||
+    pathname === "/api/enquiries" ||
     pathname.startsWith("/api/webhooks/");
 
   if (isPublicApi) return NextResponse.next();

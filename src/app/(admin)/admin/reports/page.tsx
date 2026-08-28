@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
-import { MOCK_LEADS } from "@/app/(admin)/admin/leads/page";
+import { EMPTY_LEADS } from "@/components/admin/leads-manager";
 import { MOCK_AGENTS } from "@/lib/properties/service";
 
 type ReportDomain = "PROPERTIES" | "CUSTOMERS" | "FINANCIAL" | "INSPECTIONS";
@@ -68,7 +68,7 @@ export default function AdminERPReportsPage() {
   });
 
   // Filter Leads Data
-  const filteredLeads = MOCK_LEADS.filter((l) => {
+  const filteredLeads = EMPTY_LEADS.filter((l) => {
     if (statusFilter !== "ALL" && l.status !== statusFilter) return false;
     if (searchQuery && !l.name.toLowerCase().includes(searchQuery.toLowerCase()) && !l.email.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;

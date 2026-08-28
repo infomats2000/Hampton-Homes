@@ -31,11 +31,24 @@ export function PropertyDetailClient({ property }: { property: MRIRawProperty })
   const [selectedPhoto, setSelectedPhoto] = useState(property.photos[0] || "");
   const [isSaved, setIsSaved] = useState(false);
   const [enquirySent, setEnquirySent] = useState(false);
+  const [enquirySending, setEnquirySending] = useState(false);
+  const [enquiryError, setEnquiryError] = useState("");
 
-  const agent = MOCK_AGENTS.find((a) => a.name === property.primaryAgentName) || MOCK_AGENTS[0];
+  const agent = MOCK_AGENTS.find((a) => a.name === property.primaryAgentName) || {
+    ...MOCK_AGENTS[0], name: property.primaryAgentName, email: property.primaryAgentEmail, officeName: property.officeName,
+  };
 
-  const handleEnquiry = (e: React.FormEvent) => {
+  const handleEnquiry = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setEnquirySending(true); setEnquiryError("");
+    const form = new FormData(e.currentTarget);
+    const response = await fetch("/api/enquiries", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ listingId: property.externalId, name: form.get("name"), email: form.get("email"), phone: form.get("phone"), message: form.get("message"), website: form.get("website") }),
+    });
+    const result = await response.json().catch(() => ({}));
+    setEnquirySending(false);
+    if (!response.ok) { setEnquiryError(result.error ?? "We could not send your enquiry. Please call the agent directly."); return; }
     setEnquirySent(true);
   };
 
@@ -303,32 +316,39 @@ export function PropertyDetailClient({ property }: { property: MRIRawProperty })
                     </div>
                   ) : (
                     <form onSubmit={handleEnquiry} className="space-y-3">
+                      <input name="website" type="text" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
                       <input
+                        name="name"
                         type="text"
                         required
                         placeholder="Your Full Name *"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#0a192f]"
                       />
                       <input
+                        name="email"
                         type="email"
                         required
                         placeholder="Your Email Address *"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#0a192f]"
                       />
                       <input
+                        name="phone"
                         type="tel"
                         required
                         placeholder="Phone Number *"
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#0a192f]"
                       />
                       <textarea
+                        name="message"
+                        required
                         rows={3}
                         defaultValue={`Hi ${agent.name}, I'm interested in viewing ${property.streetNumber} ${property.streetName}, ${property.suburb}. Please send me further inspection details.`}
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#0a192f]"
                       />
-                      <Button type="submit" variant="gold" size="md" className="w-full gap-2 text-xs">
+                      {enquiryError && <p role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700">{enquiryError}</p>}
+                      <Button type="submit" variant="gold" size="md" disabled={enquirySending} className="w-full gap-2 text-xs">
                         <Send className="h-3.5 w-3.5" />
-                        <span>Send Enquiry to Agent</span>
+                        <span>{enquirySending ? "Sending…" : "Send Enquiry to Agent"}</span>
                       </Button>
                     </form>
                   )}
