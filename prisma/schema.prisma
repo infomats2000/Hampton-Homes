@@ -64,6 +64,14 @@ enum LeadType {
   GENERAL
 }
 
+enum AppraisalStatus {
+  NEW
+  ASSIGNED
+  SCHEDULED
+  COMPLETED
+  ARCHIVED
+}
+
 enum SyncStatus {
   PENDING
   RUNNING
@@ -203,6 +211,7 @@ model Agent {
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   office       Office     @relation(fields: [officeId], references: [id])
   assignedLeads Lead[]    @relation("AgentLeads")
+  appraisalRequests AppraisalRequest[]
   listings     PropertyAgent[]
 }
 
@@ -411,11 +420,36 @@ model Lead {
   property      Property?  @relation(fields: [propertyId], references: [id])
   activities    LeadActivity[]
   enquiries     Enquiry[]
+  appraisalRequest AppraisalRequest?
 
   @@index([status, createdAt])
   @@index([agentId])
   @@index([officeId])
   @@index([email])
+}
+
+model AppraisalRequest {
+  id               String          @id @default(uuid())
+  leadId           String          @unique
+  assignedAgentId  String?
+  appointmentId    String?         @unique
+  address          String
+  suburb           String
+  state            String          @default("NSW")
+  postcode         String
+  propertyType     String
+  bedrooms         Int             @default(0)
+  bathrooms        Int             @default(0)
+  sellingTimeframe String
+  status           AppraisalStatus @default(NEW)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  lead             Lead            @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  assignedAgent    Agent?          @relation(fields: [assignedAgentId], references: [id])
+
+  @@index([status, createdAt])
+  @@index([assignedAgentId])
 }
 
 model LeadActivity {
