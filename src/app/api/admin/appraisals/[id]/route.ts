@@ -49,8 +49,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
             },
           });
       appointmentId = appointment.id;
-    } else if (appointmentId && input.status === "COMPLETED") {
-      await tx.appointment.update({ where: { id: appointmentId }, data: { status: "COMPLETED" } });
+    } else if (appointmentId && (input.status === "COMPLETED" || input.status === "ARCHIVED")) {
+      await tx.appointment.update({ where: { id: appointmentId }, data: { status: input.status === "COMPLETED" ? "COMPLETED" : "CANCELLED" } });
     }
 
     const leadStatus = input.status === "NEW" ? "NEW"
