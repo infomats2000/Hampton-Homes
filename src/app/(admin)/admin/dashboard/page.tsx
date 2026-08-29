@@ -10,8 +10,12 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+function getThirtyDaysAgo() {
+  return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+}
+
 export default async function AdminDashboardPage() {
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgo = getThirtyDaysAgo();
   const [properties, newLeadCount, enquiryCount, latestSync, pendingSyncCount, failedSyncCount] = await Promise.all([
     getAllProperties(),
     prisma.lead.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
