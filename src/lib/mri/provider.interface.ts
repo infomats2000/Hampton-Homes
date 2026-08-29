@@ -22,8 +22,8 @@ export interface MRIRawProperty {
   landAreaSqm?: number;
   buildingAreaSqm?: number;
   propertyType: string; // House, Apartment, Townhouse, Villa
-  listingType: "RESIDENTIAL_SALE" | "RESIDENTIAL_RENT" | "COMMERCIAL_SALE" | "COMMERCIAL_RENT";
-  status: "FOR_SALE" | "FOR_RENT" | "UNDER_OFFER" | "SOLD" | "LEASED" | "WITHDRAWN";
+  listingType: "RESIDENTIAL_SALE" | "RESIDENTIAL_RENT" | "COMMERCIAL_SALE" | "COMMERCIAL_RENT" | "PROJECT";
+  status: "DRAFT" | "COMING_SOON" | "FOR_SALE" | "FOR_RENT" | "AUCTION" | "UNDER_OFFER" | "UNDER_CONTRACT" | "SOLD" | "LEASED" | "WITHDRAWN" | "OFF_MARKET";
   headline: string;
   description: string;
   priceDisplay: string;
@@ -33,6 +33,8 @@ export interface MRIRawProperty {
   officeName: string;
   photos: string[];
   inspections?: Array<{ startTime: string; endTime: string }>;
+  auctionDate?: string;
+  auctionLocation?: string;
   updatedAt: string;
 }
 

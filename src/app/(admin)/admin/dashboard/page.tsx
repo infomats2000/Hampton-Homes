@@ -5,9 +5,22 @@ import { StatsCard } from "@/components/ui/stats-card";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
+import { getAllProperties } from "@/lib/properties/database-service";
+import { prisma } from "@/lib/prisma";
 
-export default function AdminDashboardPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminDashboardPage() {
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const [properties, newLeadCount, enquiryCount, latestSync, pendingSyncCount, failedSyncCount] = await Promise.all([
+    getAllProperties(),
+    prisma.lead.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+    prisma.enquiry.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+    prisma.syncJob.findFirst({ orderBy: { startedAt: "desc" } }),
+    prisma.syncJob.count({ where: { status: { in: ["PENDING", "RUNNING"] } } }),
+    prisma.syncJob.count({ where: { status: "FAILED" } }),
+  ]);
+  const activeProperties = properties.filter((property) => !["DRAFT", "WITHDRAWN", "OFF_MARKET", "SOLD", "LEASED"].includes(property.status));
   return (
     <div className="space-y-8">
       {/* Page Title & Quick Actions */}
@@ -149,35 +162,35 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Active Listings"
-          value={MOCK_AUSTRALIAN_PROPERTIES.length}
-          change="+12%"
+          value={activeProperties.length}
+          change={`${properties.length} total`}
           isPositive={true}
           icon={Building2}
-          subtitle="100% MRI Synchronized"
+          subtitle="Published and internal records"
         />
         <StatsCard
           title="MRI Sync Health"
-          value="100%"
-          change="0 errors"
-          isPositive={true}
+          value={latestSync?.status ?? "Not run"}
+          change={latestSync ? `${latestSync.recordsFailed} errors` : "No sync history"}
+          isPositive={latestSync?.status === "SUCCESS"}
           icon={RefreshCw}
-          subtitle="Vault & Property Tree online"
+          subtitle="Latest recorded synchronization job"
         />
         <StatsCard
           title="New Enquiries & Leads"
-          value="28"
-          change="+18%"
+          value={newLeadCount}
+          change="Last 30 days"
           isPositive={true}
           icon={Users}
-          subtitle="Assigned to 5 local offices"
+          subtitle="Stored in DigitalOcean"
         />
         <StatsCard
-          title="Website Property Views"
-          value="14,250"
-          change="+32%"
+          title="Property Enquiries"
+          value={enquiryCount}
+          change="Last 30 days"
           isPositive={true}
           icon={Eye}
-          subtitle="Last 30 days"
+          subtitle="Verified website submissions"
         />
       </div>
 
@@ -188,9 +201,9 @@ export default function AdminDashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-4">
               <div>
-                <CardTitle>Recent MRI Synchronized Properties</CardTitle>
+                <CardTitle>Recent Property Listings</CardTitle>
                 <p className="text-xs text-slate-500 mt-1">
-                  Authoritative listings imported automatically from MRI Vault & Property Tree.
+                  Latest listings stored in the DigitalOcean property database.
                 </p>
               </div>
               <Link href="/admin/properties">
@@ -213,7 +226,7 @@ export default function AdminDashboardPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 font-medium">
-                    {MOCK_AUSTRALIAN_PROPERTIES.map((prop) => (
+                    {properties.slice(0, 8).map((prop) => (
                       <tr key={prop.externalId} className="hover:bg-slate-50/80 transition-colors">
                         <td className="py-3 px-4 flex items-center gap-3">
                           <img
@@ -240,11 +253,12 @@ export default function AdminDashboardPage() {
                         <td className="py-3 px-4">
                           <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold text-[11px]">
                             <CheckCircle2 className="h-3.5 w-3.5" />
-                            <span>Synced</span>
+                            <span>Stored</span>
                           </span>
                         </td>
                       </tr>
                     ))}
+                    {properties.length === 0 && <tr><td colSpan={5} className="px-4 py-10 text-center text-slate-500">No properties have been added yet.</td></tr>}
                   </tbody>
                 </table>
               </div>
@@ -262,30 +276,19 @@ export default function AdminDashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 space-y-1">
-                <div className="flex items-center justify-between text-xs font-bold text-emerald-900">
-                  <span>MRI Vault Connection</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-200 text-emerald-800 text-[10px]">CONNECTED</span>
-                </div>
-                <p className="text-[11px] text-emerald-700">Last synced 2 minutes ago via Webhook</p>
-              </div>
-
-              <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 space-y-1">
-                <div className="flex items-center justify-between text-xs font-bold text-emerald-900">
-                  <span>MRI Property Tree Connection</span>
-                  <span className="px-2 py-0.5 rounded bg-emerald-200 text-emerald-800 text-[10px]">CONNECTED</span>
-                </div>
-                <p className="text-[11px] text-emerald-700">Last synced 5 minutes ago</p>
+              <div className={`p-3 rounded-lg border space-y-1 ${latestSync?.status === "SUCCESS" ? "bg-emerald-50 border-emerald-200" : "bg-slate-50 border-slate-200"}`}>
+                <div className="flex items-center justify-between text-xs font-bold text-slate-900"><span>Latest MRI Sync</span><span className="rounded bg-white px-2 py-0.5 text-[10px]">{latestSync?.status ?? "NOT CONFIGURED"}</span></div>
+                <p className="text-[11px] text-slate-600">{latestSync ? `${latestSync.provider} · ${latestSync.recordsProcessed} records · ${latestSync.startedAt.toLocaleString("en-AU")}` : "No MRI synchronization job has been recorded."}</p>
               </div>
 
               <div className="pt-2 border-t border-slate-100 space-y-2">
                 <div className="flex justify-between text-xs text-slate-600">
                   <span>Pending Sync Queue</span>
-                  <span className="font-semibold text-slate-900">0 jobs</span>
+                  <span className="font-semibold text-slate-900">{pendingSyncCount} jobs</span>
                 </div>
                 <div className="flex justify-between text-xs text-slate-600">
                   <span>Failed Sync Queue</span>
-                  <span className="font-semibold text-slate-900">0 records</span>
+                  <span className="font-semibold text-slate-900">{failedSyncCount} jobs</span>
                 </div>
               </div>
 

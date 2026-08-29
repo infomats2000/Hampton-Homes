@@ -1,201 +1,34 @@
-"use client";
-
-import React, { useState } from "react";
 import Link from "next/link";
-import { Calendar, Clock, MapPin, Users, Download, Plus, Bell, CheckCircle2, UserCheck, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Calendar, Clock, MapPin, UserCheck } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { MOCK_AUSTRALIAN_PROPERTIES } from "@/lib/mri/mock-provider";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { SafeImage } from "@/components/ui/safe-image";
+import { prisma } from "@/lib/prisma";
 
-interface InspectionSession {
-  id: string;
-  property: typeof MOCK_AUSTRALIAN_PROPERTIES[0];
-  date: string;
-  startTime: string;
-  endTime: string;
-  agentName: string;
-  registeredAttendees: Array<{ name: string; phone: string; email: string; headcount: number }>;
-}
+export const dynamic = "force-dynamic";
 
-export default function AdminInspectionsPage() {
-  const [sessions, setSessions] = useState<InspectionSession[]>([
-    {
-      id: "session-101",
-      property: MOCK_AUSTRALIAN_PROPERTIES[0], // Parramatta House
-      date: "Saturday, 29 August 2026",
-      startTime: "10:00 AM",
-      endTime: "10:30 AM",
-      agentName: "Marcus Vance",
-      registeredAttendees: [
-        { name: "James Harrison", phone: "0412 345 678", email: "james.harrison@example.com.au", headcount: 2 },
-        { name: "David Miller", phone: "0411 222 333", email: "david.miller@example.com.au", headcount: 1 },
-      ],
+export default async function AdminInspectionsPage() {
+  const sessions = await prisma.propertyInspection.findMany({
+    where: { endTime: { gte: new Date() } },
+    include: {
+      listing: {
+        include: {
+          property: { include: { media: { where: { mediaType: "PHOTO" }, orderBy: [{ isPrimary: "desc" }, { displayOrder: "asc" }], take: 1 } } },
+          agents: { where: { isPrimary: true }, take: 1, include: { agent: { include: { user: true } } } },
+          _count: { select: { enquiries: true } },
+        },
+      },
     },
-    {
-      id: "session-102",
-      property: MOCK_AUSTRALIAN_PROPERTIES[1], // Bondi Beach Apartment
-      date: "Saturday, 29 August 2026",
-      startTime: "11:15 AM",
-      endTime: "11:45 AM",
-      agentName: "Elena Rostova",
-      registeredAttendees: [
-        { name: "Sophie Zhang", phone: "0422 333 444", email: "sophie.zhang@example.com.au", headcount: 2 },
-      ],
-    },
-  ]);
+    orderBy: { startTime: "asc" },
+  });
 
-  const [reminderSent, setReminderSent] = useState<string | null>(null);
-
-  const handleSendReminder = (sessionId: string) => {
-    setReminderSent(sessionId);
-    setTimeout(() => setReminderSent(null), 3000);
-  };
-
-  const handleExportCSV = (session: InspectionSession) => {
-    const csvContent =
-      "Name,Phone,Email,Headcount\n" +
-      session.registeredAttendees.map((a) => `"${a.name}","${a.phone}","${a.email}",${a.headcount}`).join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `inspections-${session.property.suburb}-${session.date.replace(/[^a-z0-9]/gi, "_")}.csv`;
-    a.click();
-  };
-
-  return (
-    <div className="space-y-8">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="font-serif text-3xl font-bold text-[#0a192f]">
-              Inspection Sessions & Attendee Management
-            </h1>
-            <Badge variant="gold">Section 40 Compliant</Badge>
-          </div>
-          <p className="text-sm text-slate-500 mt-1">
-            Schedule open home sessions, manage registered buyers, send automated SMS reminders, and export sign-in sheets.
-          </p>
-        </div>
-
-        <Button variant="gold" size="sm" className="gap-2 text-xs">
-          <Plus className="h-4 w-4" />
-          <span>Schedule New Inspection Session</span>
-        </Button>
-      </div>
-
-      {reminderSent && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center gap-2">
-          <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
-          <span>Automated SMS & Email Reminders Dispatched to Registered Attendees!</span>
-        </div>
-      )}
-
-      {/* Inspection Sessions List */}
-      <div className="space-y-6">
-        {sessions.map((sess) => (
-          <Card key={sess.id} className="overflow-hidden hover:shadow-md transition-all">
-            <CardHeader className="bg-slate-50 border-b border-slate-200 pb-4">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <img
-                    src={sess.property.photos[0]}
-                    alt=""
-                    className="h-14 w-20 rounded-lg object-cover border border-slate-200"
-                  />
-                  <div>
-                    <span className="text-xs font-bold text-[#b38b38] uppercase tracking-wider">{sess.property.suburb}</span>
-                    <h3 className="font-serif font-bold text-lg text-[#0a192f]">
-                      {sess.property.streetNumber} {sess.property.streetName}, {sess.property.suburb}
-                    </h3>
-                    <p className="text-xs text-slate-500 font-semibold">{sess.property.priceDisplay}</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSendReminder(sess.id)}
-                    className="gap-1.5 text-xs"
-                  >
-                    <Bell className="h-3.5 w-3.5 text-amber-500" />
-                    <span>Send Reminders</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleExportCSV(sess)}
-                    className="gap-1.5 text-xs font-semibold"
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    <span>CSV List</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => window.open(`/api/appointments/${sess.id}/ics`, "_blank")}
-                    className="gap-1.5 text-xs font-bold text-sky-800 border-sky-200 bg-sky-50 hover:bg-sky-100"
-                  >
-                    <Calendar className="h-3.5 w-3.5 text-sky-600" />
-                    <span>Add to iPhone Calendar (.ics)</span>
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-
-            <CardContent className="p-6 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-4 text-xs font-semibold text-slate-700 bg-slate-100/70 p-3 rounded-lg border border-slate-200">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-[#c5a059]" />
-                  <span>Session Date: {sess.date}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-[#c5a059]" />
-                  <span>Time: {sess.startTime} - {sess.endTime} AEST</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <UserCheck className="h-4 w-4 text-[#c5a059]" />
-                  <span>Host Agent: {sess.agentName}</span>
-                </div>
-              </div>
-
-              {/* Registered Attendees Sub-Table */}
-              <div className="space-y-2">
-                <h4 className="font-serif font-bold text-sm text-[#0a192f] flex items-center justify-between">
-                  <span>Registered Attendees ({sess.registeredAttendees.length})</span>
-                  <span className="text-xs text-slate-500 font-normal">Total Headcount: {sess.registeredAttendees.reduce((acc, a) => acc + a.headcount, 0)} Persons</span>
-                </h4>
-
-                <div className="overflow-x-auto border border-slate-200 rounded-lg">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
-                      <tr>
-                        <th className="py-2.5 px-4">Attendee Name</th>
-                        <th className="py-2.5 px-4">Phone Number</th>
-                        <th className="py-2.5 px-4">Email</th>
-                        <th className="py-2.5 px-4 text-center">Party Size</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 font-medium">
-                      {sess.registeredAttendees.map((att, idx) => (
-                        <tr key={idx} className="hover:bg-slate-50">
-                          <td className="py-2.5 px-4 font-bold text-slate-900">{att.name}</td>
-                          <td className="py-2.5 px-4 text-slate-700">{att.phone}</td>
-                          <td className="py-2.5 px-4 text-slate-700">{att.email}</td>
-                          <td className="py-2.5 px-4 text-center font-bold text-slate-900">{att.headcount}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
+  return <div className="space-y-8">
+    <div className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-end"><div><div className="flex items-center gap-2"><h1 className="font-serif text-3xl font-bold text-[#0a192f]">Upcoming Inspection Sessions</h1><Badge variant="gold">Live Database</Badge></div><p className="mt-1 text-sm text-slate-500">Inspection schedules synchronized with each listing in DigitalOcean.</p></div><Link href="/admin/properties"><Button variant="gold" size="sm">Manage property schedules</Button></Link></div>
+    {sessions.length === 0 ? <Card><CardContent className="space-y-3 p-12 text-center"><Calendar className="mx-auto h-10 w-10 text-[#c5a059]" /><h2 className="font-serif text-xl font-bold text-[#0a192f]">No upcoming inspections</h2><p className="text-sm text-slate-500">Inspection sessions will appear here when they are added to a listing or synchronized from MRI.</p></CardContent></Card> : <div className="space-y-5">{sessions.map((session) => {
+      const listing = session.listing; const property = listing.property; const agent = listing.agents[0]?.agent;
+      return <Card key={session.id} className="overflow-hidden"><CardHeader className="border-b bg-slate-50"><div className="flex flex-col justify-between gap-4 md:flex-row md:items-center"><div className="flex items-center gap-4"><div className="h-16 w-24 overflow-hidden rounded-lg bg-slate-100"><SafeImage src={property.media[0]?.url} alt={listing.headline} fallbackTitle={property.suburb} className="h-full w-full object-cover" /></div><div><span className="text-xs font-bold uppercase text-[#b38b38]">{property.suburb}</span><h2 className="font-serif text-lg font-bold text-[#0a192f]">{property.streetNumber} {property.streetName}, {property.suburb}</h2><p className="text-xs text-slate-500">{listing.priceDisplay}</p></div></div><Link href={`/admin/properties/${listing.id}`}><Button variant="outline" size="sm">Edit listing</Button></Link></div></CardHeader><CardContent className="space-y-4 p-6"><div className="grid gap-3 rounded-lg border bg-slate-50 p-4 text-xs font-semibold text-slate-700 sm:grid-cols-2 lg:grid-cols-4"><p className="flex gap-2"><Calendar className="h-4 w-4 text-[#c5a059]" />{session.startTime.toLocaleDateString("en-AU", { dateStyle: "full", timeZone: "Australia/Sydney" })}</p><p className="flex gap-2"><Clock className="h-4 w-4 text-[#c5a059]" />{session.startTime.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit", timeZone: "Australia/Sydney" })}–{session.endTime.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit", timeZone: "Australia/Sydney" })}</p><p className="flex gap-2"><UserCheck className="h-4 w-4 text-[#c5a059]" />{agent ? `${agent.user.firstName} ${agent.user.lastName}` : "Agent not assigned"}</p><p className="flex gap-2"><MapPin className="h-4 w-4 text-[#c5a059]" />{listing._count.enquiries} listing enquiries</p></div>{session.notes && <p className="text-sm text-slate-600">{session.notes}</p>}</CardContent></Card>;
+    })}</div>}
+  </div>;
 }

@@ -40,12 +40,8 @@ function toView(listing: ListingRecord): MRIRawProperty {
     landAreaSqm: property.landAreaSqm ?? undefined,
     buildingAreaSqm: property.buildingAreaSqm ?? undefined,
     propertyType: property.propertyType,
-    listingType: listing.listingType === "RESIDENTIAL_RENT" || listing.listingType === "COMMERCIAL_SALE" || listing.listingType === "COMMERCIAL_RENT"
-      ? listing.listingType
-      : "RESIDENTIAL_SALE",
-    status: listing.status === "FOR_RENT" || listing.status === "UNDER_OFFER" || listing.status === "SOLD" || listing.status === "LEASED" || listing.status === "WITHDRAWN"
-      ? listing.status
-      : "FOR_SALE",
+    listingType: listing.listingType,
+    status: listing.status,
     headline: property.websiteOverride?.customHeadline ?? listing.headline,
     description: listing.description,
     priceDisplay: listing.priceDisplay,
@@ -55,6 +51,8 @@ function toView(listing: ListingRecord): MRIRawProperty {
     officeName: assignment?.office.name ?? "Infomats Real Estate",
     photos: property.media.filter((item) => item.mediaType === "PHOTO").map((item) => item.url),
     inspections: listing.inspections.map((item) => ({ startTime: item.startTime.toISOString(), endTime: item.endTime.toISOString() })),
+    auctionDate: listing.auctionDate?.toISOString(),
+    auctionLocation: listing.auctionLocation ?? undefined,
     updatedAt: listing.updatedAt.toISOString(),
   };
 }
