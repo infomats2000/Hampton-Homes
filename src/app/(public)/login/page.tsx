@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -10,50 +10,11 @@ import {
   EyeOff,
   ArrowRight,
   ShieldCheck,
-  Building2,
-  User,
-  Sparkles,
   AlertCircle,
   CheckCircle2,
-  KeyRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AGENCY_NAME } from "@/lib/agency-config";
-
-const DEMO_PRESETS = [
-  {
-    label: "Super Admin",
-    subtitle: "Platform & Feature Controls",
-    email: "superadmin@hamptonhomes.com.au",
-    password: "SuperAdmin123!",
-    badge: "SaaS Owner",
-    color: "bg-amber-500/10 text-amber-500 border-amber-500/20",
-  },
-  {
-    label: "Agency Owner",
-    subtitle: "Full ERP & Subscription Access",
-    email: "admin@hamptonhomes.com.au",
-    password: "AdminPassword123!",
-    badge: "Admin",
-    color: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  },
-  {
-    label: "Sales Agent",
-    subtitle: "Listings, Leads & Inspections",
-    email: "marcus.vance@hamptonhomes.com.au",
-    password: "AgentPassword123!",
-    badge: "Agent",
-    color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  },
-  {
-    label: "Client / Buyer",
-    subtitle: "Saved Searches & Favourites",
-    email: "james.harrison@example.com.au",
-    password: "CustomerPassword123!",
-    badge: "Customer",
-    color: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-  },
-];
 
 function LoginForm() {
   const router = useRouter();
@@ -103,12 +64,6 @@ function LoginForm() {
       setError("A network error occurred. Please check your connection.");
       setLoading(false);
     }
-  };
-
-  const handleSelectPreset = (preset: (typeof DEMO_PRESETS)[0]) => {
-    setEmail(preset.email);
-    setPassword(preset.password);
-    setError(null);
   };
 
   return (
@@ -225,41 +180,6 @@ function LoginForm() {
               )}
             </Button>
           </form>
-
-          {/* Quick Demo Credentials Switcher */}
-          <div className="mt-8 pt-6 border-t border-slate-800">
-            <div className="flex items-center gap-2 mb-3">
-              <KeyRound className="h-3.5 w-3.5 text-[#c5a059]" />
-              <span className="text-xs font-semibold text-slate-300 tracking-wider uppercase">
-                Quick One-Click Demo Logins
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              {DEMO_PRESETS.map((preset) => (
-                <button
-                  key={preset.label}
-                  type="button"
-                  onClick={() => handleSelectPreset(preset)}
-                  className="p-2.5 text-left rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-[#c5a059]/40 transition-all group"
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold text-white group-hover:text-[#c5a059] transition-colors">
-                      {preset.label}
-                    </span>
-                    <span
-                      className={`text-[9px] px-1.5 py-0.5 rounded-full border font-semibold ${preset.color}`}
-                    >
-                      {preset.badge}
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 truncate">
-                    {preset.subtitle}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Customer Register Link */}
           <div className="mt-6 text-center text-xs text-slate-400">

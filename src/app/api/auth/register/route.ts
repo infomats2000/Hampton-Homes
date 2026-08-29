@@ -4,18 +4,14 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { createSessionToken, setSessionCookie, buildAuthUser } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { passwordSchema } from "@/lib/password-policy";
 
 const registerSchema = z.object({
   firstName: z.string().trim().min(2, "First name must be at least 2 characters"),
   lastName: z.string().trim().min(2, "Last name must be at least 2 characters"),
   email: z.string().trim().email("Please enter a valid email address"),
   phone: z.string().trim().optional(),
-  password: z.string()
-    .min(12, "Password must be at least 12 characters long")
-    .regex(/[a-z]/, "Password must include a lowercase letter")
-    .regex(/[A-Z]/, "Password must include an uppercase letter")
-    .regex(/[0-9]/, "Password must include a number")
-    .regex(/[^A-Za-z0-9]/, "Password must include a special character"),
+  password: passwordSchema,
 });
 
 export async function POST(req: NextRequest) {

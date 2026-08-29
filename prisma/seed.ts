@@ -7,6 +7,16 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../src/lib/prisma";
 import { PERMISSIONS, ROLE_DEFAULT_PERMISSIONS, RoleType } from "../src/lib/permissions";
 import { DEFAULT_SUBSCRIPTION } from "../src/lib/features";
+import { passwordSchema } from "../src/lib/password-policy";
+
+function requiredSeedPassword(name: string): string {
+  const value = process.env[name];
+  const parsed = passwordSchema.safeParse(value);
+  if (!parsed.success) {
+    throw new Error(`${name} is required for seeding and must satisfy the production password policy.`);
+  }
+  return parsed.data;
+}
 
 async function main() {
   console.log("🌱 Starting Hampton Homes database seeding...");
@@ -80,7 +90,7 @@ async function main() {
 
   // 3. Seed Default Super Admin Account
   console.log("Creating Super Admin account...");
-  const superAdminPassword = await bcrypt.hash("SuperAdmin123!", 10);
+  const superAdminPassword = await bcrypt.hash(requiredSeedPassword("SEED_SUPER_ADMIN_PASSWORD"), 10);
   const superAdminRole = await prisma.role.findUniqueOrThrow({ where: { name: "SUPER_ADMIN" } });
   
   const superAdmin = await prisma.user.upsert({
@@ -118,7 +128,7 @@ async function main() {
   // 4. Seed Agency Owner (Admin) Account
   console.log("Creating Agency Owner (Admin) account...");
   const adminEmail = process.env.ADMIN_EMAIL || "admin@hamptonhomes.com.au";
-  const adminPassword = await bcrypt.hash("AdminPassword123!", 10);
+  const adminPassword = await bcrypt.hash(requiredSeedPassword("SEED_ADMIN_PASSWORD"), 10);
   const adminRole = await prisma.role.findUniqueOrThrow({ where: { name: "ADMIN" } });
 
   const adminUser = await prisma.user.upsert({
@@ -172,7 +182,7 @@ async function main() {
     },
   });
 
-  const agentPassword = await bcrypt.hash("AgentPassword123!", 10);
+  const agentPassword = await bcrypt.hash(requiredSeedPassword("SEED_AGENT_PASSWORD"), 10);
   const agentRole = await prisma.role.findUniqueOrThrow({ where: { name: "AGENT" } });
 
   const agentUser = await prisma.user.upsert({
@@ -224,7 +234,7 @@ async function main() {
 
   // 6. Seed Customer Account
   console.log("Creating Customer account...");
-  const customerPassword = await bcrypt.hash("CustomerPassword123!", 10);
+  const customerPassword = await bcrypt.hash(requiredSeedPassword("SEED_CUSTOMER_PASSWORD"), 10);
   const customerRole = await prisma.role.findUniqueOrThrow({ where: { name: "CUSTOMER" } });
 
   const customerUser = await prisma.user.upsert({
@@ -289,11 +299,7 @@ async function main() {
   });
 
   console.log("✅ Hampton Homes seeding complete!");
-  console.log("\nDefault Seeded Accounts:");
-  console.log("1. Super Admin: superadmin@hamptonhomes.com.au  | Password: SuperAdmin123!");
-  console.log("2. Agency Owner: admin@hamptonhomes.com.au        | Password: AdminPassword123!");
-  console.log("3. Agent:        marcus.vance@hamptonhomes.com.au | Password: AgentPassword123!");
-  console.log("4. Customer:     james.harrison@example.com.au    | Password: CustomerPassword123!");
+  console.log("Seed account passwords were loaded from environment variables and were not printed.");
 }
 
 main()

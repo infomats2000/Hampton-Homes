@@ -4,13 +4,14 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getStaffSeatUsage, getSubscriptionConfig, invalidateSeatUsageCache } from "@/lib/features";
+import { passwordSchema } from "@/lib/password-policy";
 
 const createUserSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required"),
   lastName: z.string().trim().min(1, "Last name is required"),
   email: z.string().trim().email("Valid email is required"),
   phone: z.string().trim().optional(),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: passwordSchema,
   role: z.enum([
     "SUPER_ADMIN",
     "ADMIN",
@@ -26,7 +27,7 @@ const updateUserSchema = z.object({
   userId: z.string().min(1, "User ID is required"),
   isActive: z.boolean().optional(),
   roles: z.array(z.string()).optional(),
-  newPassword: z.string().min(6).optional(),
+  newPassword: passwordSchema.optional(),
 });
 
 export async function GET() {
@@ -305,6 +306,12 @@ export async function PATCH(req: NextRequest) {
       data: updateData,
       include: { userRoles: { include: { role: true } } },
     });
+
+    if (newPassword) {
+      await prisma.auditLog.create({
+        data: { actorId: currentUser.id, actorEmail: currentUser.email, action: "PASSWORD_RESET_BY_SUPER_ADMIN", entity: "User", entityId: userId },
+      });
+    }
 
     invalidateSeatUsageCache();
     const seatUsage = await getStaffSeatUsage();

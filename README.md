@@ -30,6 +30,7 @@ npm run lint
 npx tsc --noEmit
 npm run db:validate
 npm run build
+npm run smoke:production
 ```
 
 ## Deployment
@@ -37,3 +38,5 @@ npm run build
 The repository contains a production `Dockerfile`, Firebase project mapping, and a Firebase Hosting rewrite to the `infomats-realestate` Cloud Run service. Runtime secrets are supplied through Google Secret Manager.
 
 Do not commit `.env.local` or other credential files.
+
+Privileged seed accounts require `SEED_*_PASSWORD` environment variables that satisfy the production password policy. Seed credentials are never embedded in source or printed to logs.

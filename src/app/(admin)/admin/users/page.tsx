@@ -1291,7 +1291,7 @@ export default function AdminUsersPage() {
                     minLength={6}
                     value={resetPass}
                     onChange={(e) => setResetPass(e.target.value)}
-                    placeholder="Enter new password (min 6 chars)"
+                    placeholder="12+ characters with upper, lower, number and symbol"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-900 font-mono"
                   />
                 </div>

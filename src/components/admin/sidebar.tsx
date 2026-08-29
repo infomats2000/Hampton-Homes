@@ -177,6 +177,7 @@ export function AdminSidebar({ mobileOpen = false, onClose }: AdminSidebarProps)
         { label: "Roles & Permissions", href: "/admin/roles", icon: ShieldCheck },
         { label: "Audit Log", href: "/admin/audit", icon: History },
         { label: "Agency Branding", href: "/admin/settings", icon: Palette, badge: "Config" },
+        { label: "Account Security", href: "/admin/security", icon: ShieldCheck },
         { label: "System Settings", href: "/admin/system", icon: Settings },
         { label: "System Health", href: "/admin/system-health", icon: Activity },
       ],

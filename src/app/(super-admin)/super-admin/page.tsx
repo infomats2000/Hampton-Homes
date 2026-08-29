@@ -188,7 +188,7 @@ export default function SuperAdminPage() {
   const [newLastName, setNewLastName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
-  const [newPassword, setNewPassword] = useState("AgencyPass123!");
+  const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState<string>("ADMIN");
   const [creatingUser, setCreatingUser] = useState(false);
   const [modalError, setModalError] = useState("");
@@ -276,7 +276,7 @@ export default function SuperAdminPage() {
 
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode === "super2026" || passcode === "SuperAdmin123!" || passcode === "admin") {
+    if (false) {
       setIsAuthenticated(true);
       setPasscodeError(false);
     } else {
@@ -390,7 +390,7 @@ export default function SuperAdminPage() {
         setNewLastName("");
         setNewEmail("");
         setNewPhone("");
-        setNewPassword("AgencyPass123!");
+        setNewPassword("");
         fetchUsers();
       } else {
         setModalError(data.error || "Failed to create user");
@@ -503,7 +503,7 @@ NEXT_PUBLIC_FEATURE_DOCUMENTS=${features.digitalDocuments}`;
                 className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#c5a059] font-mono text-center text-white"
               />
               {passcodeError && (
-                <p className="text-xs text-rose-400 font-semibold mt-1">Invalid Passcode (Hint: SuperAdmin123!)</p>
+                <p className="text-xs text-rose-400 font-semibold mt-1">Use your authenticated Super Admin account.</p>
               )}
             </div>
 
@@ -1303,7 +1303,7 @@ NEXT_PUBLIC_FEATURE_DOCUMENTS=${features.digitalDocuments}`;
                     minLength={6}
                     value={resetNewPass}
                     onChange={(e) => setResetNewPass(e.target.value)}
-                    placeholder="Enter new password (min 6 chars)"
+                    placeholder="12+ characters with upper, lower, number and symbol"
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white font-mono"
                   />
                 </div>

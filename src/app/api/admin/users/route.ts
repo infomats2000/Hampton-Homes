@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getStaffSeatUsage, getSubscriptionConfig, invalidateSeatUsageCache } from "@/lib/features";
+import { passwordSchema } from "@/lib/password-policy";
 
 const createStaffSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required"),
@@ -11,7 +12,7 @@ const createStaffSchema = z.object({
   email: z.string().trim().email("Valid email is required"),
   phone: z.string().trim().optional(),
   mobile: z.string().trim().optional(),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: passwordSchema,
   role: z.enum(["ADMIN", "MARKETING_ADMIN", "OFFICE_MANAGER", "AGENT", "SUPPORT"]),
   position: z.string().trim().optional(),
   officeId: z.string().optional(),
@@ -34,7 +35,7 @@ const updateStaffSchema = z.object({
   isPublic: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
   isActive: z.boolean().optional(),
-  newPassword: z.string().min(6).optional(),
+  newPassword: passwordSchema.optional(),
 });
 
 export async function GET() {
@@ -408,6 +409,12 @@ export async function PATCH(req: NextRequest) {
         agentProfile: true,
       },
     });
+
+    if (newPassword) {
+      await prisma.auditLog.create({
+        data: { actorId: currentUser.id, actorEmail: currentUser.email, action: "PASSWORD_RESET_BY_ADMIN", entity: "User", entityId: userId },
+      });
+    }
 
     // Update or Create Agent Profile
     if (position !== undefined || officeId !== undefined || bio !== undefined || isPublic !== undefined || isFeatured !== undefined || mobile !== undefined) {

@@ -13,7 +13,9 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:validate": "prisma validate",
-    "db:seed": "tsx --env-file=.env.local prisma/seed.ts"
+    "db:seed": "tsx --env-file=.env.local prisma/seed.ts",
+    "smoke:production": "node scripts/production-smoke.mjs",
+    "security:rotate-seed-accounts": "tsx scripts/rotate-seed-account-passwords.ts"
   },
   "dependencies": {
     "@google-cloud/storage": "^8.0.1",
