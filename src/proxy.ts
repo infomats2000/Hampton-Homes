@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { getJwtKey } from "@/lib/jwt";
 
-const AUTH_COOKIE_NAME = "auth_session";
+// Firebase Hosting forwards only `__session` through Hosting rewrites.
+const AUTH_COOKIE_NAME = "__session";
+const LEGACY_AUTH_COOKIE_NAME = "auth_session";
 const STAFF_ROLES = new Set([
   "SUPER_ADMIN",
   "ADMIN",
@@ -51,7 +53,8 @@ export async function proxy(request: NextRequest) {
 
   if (!isApi && !isProtectedPage) return NextResponse.next();
 
-  const decoded = await verifyToken(request.cookies.get(AUTH_COOKIE_NAME)?.value);
+  const token = request.cookies.get(AUTH_COOKIE_NAME)?.value ?? request.cookies.get(LEGACY_AUTH_COOKIE_NAME)?.value;
+  const decoded = await verifyToken(token);
   if (!decoded) {
     if (isApi) return apiError(401, "Authentication required");
 

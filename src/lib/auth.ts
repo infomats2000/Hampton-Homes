@@ -5,7 +5,10 @@ import { RoleType, PermissionCode, ROLE_DEFAULT_PERMISSIONS, AuthUser } from "./
 import { getJwtKey } from "./jwt";
 
 const SALT_ROUNDS = 10;
-export const AUTH_COOKIE_NAME = "auth_session";
+// Firebase Hosting only forwards the specially named `__session` cookie to
+// rewritten Cloud Run services. Other cookie names are stripped at the CDN.
+export const AUTH_COOKIE_NAME = "__session";
+const LEGACY_AUTH_COOKIE_NAME = "auth_session";
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, SALT_ROUNDS);
@@ -69,6 +72,7 @@ export async function setSessionCookie(token: string): Promise<void> {
 export async function clearSessionCookie(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(AUTH_COOKIE_NAME);
+  cookieStore.delete(LEGACY_AUTH_COOKIE_NAME);
 }
 
 /**
@@ -77,7 +81,7 @@ export async function clearSessionCookie(): Promise<void> {
 export async function getCurrentUser(): Promise<AuthUser | null> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
+    const token = cookieStore.get(AUTH_COOKIE_NAME)?.value ?? cookieStore.get(LEGACY_AUTH_COOKIE_NAME)?.value;
     if (!token) return null;
 
     const payload = await verifySessionToken(token);
